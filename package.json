@@ -4,14 +4,19 @@
   "description": "Command line tool for Jira",
   "author": "Daniel Kidanemariam",
   "license": "ISC",
-  "main": "src/jiran.js",
+  "main": "lib/jiran.js",
   "scripts": {
-    "test": "mocha -w"
+    "compile": "babel -d lib/ src/",
+    "test": "npm run compile && mocha --compilers js:babel-core/register"
   },
   "bin": {
-    "jira-cli": "./src/jiran.js"
+    "jiran": "./lib/jiran.js"
   },
   "devDependencies": {
+    "babel-cli": "^6.3.17",
+    "babel-core": "^6.3.26",    
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
     "mocha": "^2.3.4",
     "chai": "^3.4.1"
   }
