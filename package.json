@@ -14,7 +14,9 @@
     "jiran": "./lib/jiran.js"
   },
   "standard": {
-    "ignore": [ "**/test/*" ]
+    "ignore": [
+      "**/test/*"
+    ]
   },
   "devDependencies": {
     "babel-cli": "^6.3.17",
@@ -24,5 +26,9 @@
     "chai": "^3.4.1",
     "mocha": "^2.3.4",
     "standard": "^5.4.1"
+  },
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "user-home": "^2.0.0"
   }
 }
