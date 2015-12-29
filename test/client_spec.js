@@ -1,8 +1,6 @@
 var Client = require('../src/api/client')
 var expect = require('chai').expect
 
-require('chai').should()
-
 describe('Jira api client', function () {
   describe('With valid config information', function () {
     var JiraClient, configData
@@ -25,12 +23,12 @@ describe('Jira api client', function () {
     })
 
     it('It should set default properties for api requests', function () {
-      JiraClient.username.should.be.equal(configData.username)
-      JiraClient.password.should.be.equal(configData.password)
-      JiraClient.protocol.should.be.equal(configData.protocol)
-      JiraClient.host.should.be.equal(configData.host)
-      JiraClient.port.should.be.equal(configData.port)
-      JiraClient.apiVersion.should.be.equal(configData.apiVersion)
+      expect(JiraClient.username).to.be.equal(configData.username)
+      expect(JiraClient.password).to.be.equal(configData.password)
+      expect(JiraClient.protocol).to.be.equal(configData.protocol)
+      expect(JiraClient.host).to.be.equal(configData.host)
+      expect(JiraClient.port).to.be.equal(configData.port)
+      expect(JiraClient.apiVersion).to.be.equal(configData.apiVersion)
     })
   })
 
