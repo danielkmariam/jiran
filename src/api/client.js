@@ -1,3 +1,5 @@
+var url = require('url')
+
 class Client {
   constructor (Config) {
     if (!this.hasValidConfig(Config)) {
@@ -23,6 +25,15 @@ class Client {
     ]
 
     return keys.every((key) => { return Config.hasOwnProperty(key) })
+  }
+
+  buildUrl (pathname, apiVersion = this.apiVersion, basePath = 'rest/api/') {
+    return url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: basePath + apiVersion + pathname
+    })
   }
 }
 

@@ -30,6 +30,12 @@ describe('Jira api client', function () {
       expect(JiraClient.port).to.be.equal(configData.port)
       expect(JiraClient.apiVersion).to.be.equal(configData.apiVersion)
     })
+
+    it('It should build request url', function () {
+      var expected = 'https://test.domain.com/rest/api/2/issue'
+
+      expect(JiraClient.buildUrl('/issue')).to.be.equal(expected)
+    })
   })
 
   describe('With invalid config information', function () {
