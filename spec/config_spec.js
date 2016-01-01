@@ -4,7 +4,7 @@ var config = require('../src/config')
 var expect = require('chai').expect
 
 describe('Config', function () {
-  let Config, expected 
+  var Config, expected 
   
   beforeEach(function () {
     Config = config('config_test.json')
@@ -27,9 +27,10 @@ describe('Config', function () {
   })
 
   it('It should save config information', function () {
+    
     Config.save(expected)
 
-    let actual = JSON.parse(fs.readFileSync(Config.configFilePath))
+    var actual = JSON.parse(fs.readFileSync(Config.configFilePath))
 
     expect(expected.username).to.be.equal(actual.username)
     expect(expected.apiVersion).to.be.equal(actual.apiVersion)
@@ -37,7 +38,7 @@ describe('Config', function () {
 
   it('It should return saved config information', function () {
     
-    let actual = Config.detail()
+    var actual = Config.detail()
 
     expect(expected.username).to.be.equal(actual.username)
     expect(expected.password).to.be.equal(actual.password)

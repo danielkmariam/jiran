@@ -1,4 +1,5 @@
-var Client = require('../src/api/client')
+var Client = require('../../src/api/client')
+var request = require('request')
 var expect = require('chai').expect
 
 describe('Jira api client', function () {
@@ -15,11 +16,11 @@ describe('Jira api client', function () {
         apiVersion: '2'
       };
 
-      JiraClient = new Client(configData)
+      JiraClient = Client.getClient(configData)
     })
 
     it('It should not throw exception for valid config object', function () {
-      expect(() => { return JiraClient }).to.not.throw(Error)
+      expect(() => (JiraClient)).to.not.throw(Error)
     })
 
     it('It should set default properties for api requests', function () {
@@ -38,13 +39,13 @@ describe('Jira api client', function () {
     })
   })
 
-  describe('With invalid config information', function () {
+  describe('With missing config information', function () {
     it('It should throw exception when config object does not have all request fields', function () {      
       var configData = {
         username: 'test',
         password: 'test'
       }
-      expect((configData) => { new Client(configData) }).to.throw(Error)
+      expect((configData) => (Client(configData))).to.throw(Error)
     })
   })
 })
