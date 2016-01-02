@@ -16,7 +16,7 @@ describe('Jira api client', function () {
         apiVersion: '2'
       };
 
-      JiraClient = Client.getClient(configData)
+      JiraClient = Client(configData)
     })
 
     it('It should not throw exception for valid config object', function () {

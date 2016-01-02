@@ -1,6 +1,5 @@
 var url = require('url')
 var request = require('request')
-var Issue = require('./issue')
 
 class Client {
   constructor (Config) {
@@ -14,6 +13,12 @@ class Client {
     this.protocol = Config.protocol
     this.host = Config.host
     this.port = Config.port
+    this.options = {
+      auth: {
+        'user': this.username,
+        'pass': this.password
+      }
+    }
   }
 
   hasValidConfig (Config) {
@@ -40,27 +45,16 @@ class Client {
     return decodeURIComponent(uri)
   }
 
-  makeRequest (options, callback) {
-    options.auth = {
-      'user': this.username,
-      'pass': this.password
-    }
+  get (url, callback) {
+    this.options.url = this.buildUrl(url)
 
-    request(options, (error, response, body) => {
+    request.get(this.options, (error, response) => {
       if (error || response.statusCode !== 200) {
         return callback(error)
       }
-      return callback(JSON.parse(body))
+      return callback(JSON.parse(response.body))
     })
-  }
-
-  getIssue (key, id, callback) {
-    return Issue(this).getIssue(key, id, callback)
-  }
-
-  getWorklogs (key, id, callback) {
-    return Issue(this).getWorklogs(key, id, callback)
   }
 }
 
-module.exports.getClient = (Config) => (new Client(Config))
+module.exports = (Config) => (new Client(Config))

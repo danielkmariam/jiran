@@ -2,7 +2,8 @@
 
 var program = require('commander')
 var Config = require('../lib/config')()
-var JiraClient = require('../lib/api/client').getClient(Config.detail())
+var JiraClient = require('../lib/api/client')(Config.detail())
+var JiraApi = require('../lib/api/api')(JiraClient)
 
 var prompt = require('prompt')
 var configPrompt = () => {
@@ -71,18 +72,33 @@ program
   })
 
 program
+  .command('user')
+  .description('Show current user information')
+  .action(() => {
+    JiraApi.getUser((response) => {
+      console.log('Current user detail'.green)
+      console.log('======================================')
+      console.log('Key:'.green, response.key)
+      console.log('Name:'.green, response.name)
+      console.log('Displayname:'.green, response.displayName)
+      console.log('Email:'.green, response.emailAddress)
+    })
+  })
+
+program
   .command('issue')
   .description('Show issue information')
   .option('-k, --key', 'issue identifier key', String)
   .option('-i, --id', 'issue identifier id', String)
   .action((key, id) => {
-    JiraClient.getIssue(key, id, (response) => {
+    JiraApi.getIssue(key, id, (response) => {
       const fields = response.fields
+      console.log('Issue detail'.green)
       console.log('======================================')
       console.log('ID:'.green, response.id)
       console.log('Key:'.green, response.key)
       console.log('Issue Type:'.green, fields.issuetype.name)
-      console.log('Project:'.green, fields.project.key + '-' + fields.project.name)
+      console.log('Project:'.green, fields.project.name + ' (' + fields.project.key +')')
       console.log('Summary:'.green, fields.summary)
       console.log('Status:'.green, fields.status.name)
     })
@@ -94,7 +110,7 @@ program
   .option('-k, --key', 'issue identifier key', String)
   .option('-i, --id', 'issue identifier Id', String)
   .action((key, id) => {
-    JiraClient.getWorklogs(key, id, (worklogs) => {
+    JiraApi.getIssueWorklogs(key, id, (worklogs) => {
       worklogs.worklogs.map((worklog) => {
         console.log('======================================')
         console.log('ID:'.green, worklog.id)

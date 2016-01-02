@@ -1,11 +1,11 @@
 var Client = require('../../src/api/client')
-var Issue = require('../../src/api/issue')
+var Api = require('../../src/api/api')
 
 var expect = require('chai').expect
 
-describe('Issue', function () {
+describe('Api', function () {
 
-  var ConfigData, JiraClient, JiraIssue
+  var ConfigData, JiraClient, JiraApi
 
   before(function () {
     ConfigData = {
@@ -17,16 +17,16 @@ describe('Issue', function () {
       apiVersion: '2'
     };
 
-    JiraClient = Client.getClient(ConfigData)   
-    JiraIssue = new Issue(JiraClient)
+    JiraClient = Client(ConfigData)   
+    JiraApi = Api(JiraClient)
   })
 
   it('It should throw exception for missing Jira Client', function () {
-    expect(() => (new Issue())).to.throw(Error)
+    expect(() => (Api())).to.throw(Error)
   })
 
   it('It should be initialized with Jira Client', function () {
-    expect(JiraIssue.client).to.not.equal('undefined')
-    expect(JiraIssue.client.username).to.be.equal(ConfigData.username)
+    expect(JiraApi.client).to.not.equal('undefined')
+    expect(JiraApi.client.username).to.be.equal(ConfigData.username)
   })
 })
