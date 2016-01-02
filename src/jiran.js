@@ -1,6 +1,8 @@
 #!/usr/local/bin/node
+var url = require('url')
 
 var program = require('commander')
+var Table = require('cli-table')
 var Config = require('../lib/config')()
 var JiraClient = require('../lib/api/client')(Config.detail())
 var JiraApi = require('../lib/api/api')(JiraClient)
@@ -62,7 +64,7 @@ program
   .action(() => {
     const currentConfig = Config.detail()
 
-    console.log('Current user jira configuration')
+    console.log('Jira configuration')
     console.log('Username:'.green, currentConfig.username)
     console.log('Password:'.green, currentConfig.password)
     console.log('Host:'.green, currentConfig.host)
@@ -77,11 +79,13 @@ program
   .action(() => {
     JiraApi.getUser((response) => {
       console.log('Current user detail'.green)
-      console.log('======================================')
-      console.log('Key:'.green, response.key)
-      console.log('Name:'.green, response.name)
-      console.log('Displayname:'.green, response.displayName)
-      console.log('Email:'.green, response.emailAddress)
+      var table = new Table()
+      table.push(
+        {'Key': response.key},
+        {'Name': response.displayName},
+        {'Email Address': response.emailAddress}
+      )
+      console.log(table.toString())
     })
   })
 
@@ -91,16 +95,31 @@ program
   .option('-k, --key', 'issue identifier key', String)
   .option('-i, --id', 'issue identifier id', String)
   .action((key, id) => {
-    JiraApi.getIssue(key, id, (response) => {
-      const fields = response.fields
-      console.log('Issue detail'.green)
-      console.log('======================================')
-      console.log('ID:'.green, response.id)
-      console.log('Key:'.green, response.key)
-      console.log('Issue Type:'.green, fields.issuetype.name)
-      console.log('Project:'.green, fields.project.name + ' (' + fields.project.key +')')
-      console.log('Summary:'.green, fields.summary)
-      console.log('Status:'.green, fields.status.name)
+    JiraApi.getIssue(key, id, (issue) => {
+      if (issue) {
+        console.log('Issue detail summary'.green)
+
+        const fields = issue.fields
+        const link = url.format({
+          protocol: Config.detail().protocol,
+          hostname: Config.detail().host,
+          pathname: '/browse/' + issue.key
+        })
+        const table = new Table({
+          style : { compact : true, head: ['green']}
+        })
+        table.push(
+          {'Key': issue.key},
+          {'Issue Type': fields.issuetype.name},
+          {'Summary': fields.summary},
+          {'Status':fields.status.name},
+          {'link': link},
+          {'Project': fields.project.name + ' (' + fields.project.key +')'}
+        )
+        console.log(table.toString())
+      } else {
+        console.warn('Can not find this issue using given key or id'.red)
+      }
     })
   })
 
@@ -111,15 +130,21 @@ program
   .option('-i, --id', 'issue identifier Id', String)
   .action((key, id) => {
     JiraApi.getIssueWorklogs(key, id, (worklogs) => {
-      worklogs.worklogs.map((worklog) => {
-        console.log('======================================')
-        console.log('ID:'.green, worklog.id)
-        console.log('Comment:'.green, worklog.comment)
-        console.log('Created:'.green, worklog.created)
-        console.log('Updated:'.green, worklog.updated)
-        console.log('Timespent:'.green, worklog.timeSpent)
-        console.log('Displayname:'.green, worklog.author.displayName)
-      })
+      if (worklogs.total > 0) {
+        const table = new Table({
+          head: ['Worklog Id', 'Timespent', 'Comment', 'Worklog by', 'Created'],
+          style : { compact : true, head: ['green']}
+        })
+
+        worklogs.worklogs.map((worklog) => {
+          table.push(
+            [worklog.id, worklog.timeSpent, worklog.comment, worklog.author.displayName, worklog.created]
+          )
+        })
+        console.log(table.toString())
+      } else {
+        console.warn('No time logged for this issue'.red)
+      }
     })
   })
 
