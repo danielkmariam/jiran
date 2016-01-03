@@ -3,51 +3,9 @@
 var program = require('commander')
 var Table = require('cli-table')
 var Config = require('../lib/config')()
+var ConfigPrompt = require('../lib/config_prompt')
 var JiraClient = require('../lib/api/client')(Config.detail())
 var JiraApi = require('../lib/api/api')(JiraClient)
-
-var prompt = require('prompt')
-var configPrompt = () => {
-  prompt.start()
-  prompt.message = ''
-  prompt.delimiter = ''
-
-  var schema = {
-    properties: {
-      username: {
-        description: 'Username:'.green,
-        required: true
-      },
-      password: {
-        description: 'Password:'.green,
-        hidden: true
-      },
-      host: {
-        description: 'Host:'.green,
-        required: true
-      },
-      protocol: {
-        description: 'Protocol:'.green,
-        default: 'https',
-        required: true
-      },
-      port: {
-        description: 'Port <optional>:'.green
-      },
-      apiVersion: {
-        description: 'Api version:'.green,
-        default: '2',
-        required: true
-      }
-    }
-  }
-
-  prompt.get(schema, (err, configData, callback) => {
-    if (err) callback(false)
-
-    Config.save(configData)
-  })
-}
 
 program
   .version('0.0.1')
@@ -55,7 +13,7 @@ program
 program
   .command('config-create')
   .description('Create jira configuration')
-  .action(configPrompt)
+  .action(ConfigPrompt)
 
 program
   .command('config-show')
