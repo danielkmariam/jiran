@@ -11,23 +11,23 @@ program
   .version('0.0.1')
 
 program
-  .command('config-create')
+  .command('config')
   .description('Create jira configuration')
-  .action(ConfigPrompt)
-
-program
-  .command('config-show')
-  .description('Show saved jira configuration')
-  .action(() => {
-    const currentConfig = Config.detail()
-    TableRenderer.renderVertical([
-      {'Username': currentConfig.username},
-      {'Password': currentConfig.password},
-      {'Host': currentConfig.host},
-      {'Protocol': currentConfig.protocol},
-      {'Port': currentConfig.port},
-      {'Api version': currentConfig.apiVersion}
-    ])
+  .option('-s, --show <name>', 'show saved jira configuration', String)
+  .action((options) => {
+    if (options.show) {
+      const currentConfig = Config.detail()
+      TableRenderer.renderVertical([
+        {'Username': currentConfig.username},
+        {'Password': currentConfig.password},
+        {'Host': currentConfig.host},
+        {'Protocol': currentConfig.protocol},
+        {'Port': currentConfig.port},
+        {'Api version': currentConfig.apiVersion}
+      ])
+    } else {
+      ConfigPrompt()
+    }
   })
 
 program
@@ -47,19 +47,19 @@ program
 program
   .command('issue')
   .description('Show issue information')
-  .option('-k, --key', 'issue identifier key', String)
-  .option('-i, --id', 'issue identifier id', String)
-  .action((key, id) => {
-    JiraApi.getIssue(key, id)
+  .option('-k, --key <name>', 'issue identifier key', String)
+  .option('-i, --id <name>', 'issue identifier id', String)
+  .action((options) => {
+    JiraApi.getIssue(options)
   })
 
 program
-  .command('worklog')
+  .command('worklogs')
   .description('List worklogs for an issue')
-  .option('-k, --key', 'issue identifier key', String)
-  .option('-i, --id', 'issue identifier Id', String)
-  .action((key, id) => {
-    JiraApi.getIssueWorklogs(key, id)
+  .option('-k, --key <name>', 'issue identifier key', String)
+  .option('-i, --id <name>', 'issue identifier Id', String)
+  .action((options) => {
+    JiraApi.getIssueWorklogs(options)
   })
 
 program.parse(process.argv)

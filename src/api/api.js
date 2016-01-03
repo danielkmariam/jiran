@@ -21,8 +21,8 @@ class Api {
     })
   }
 
-  getIssue (key, id) {
-    let idOrKey = key || id
+  getIssue (options) {
+    let idOrKey = options.key || options.id
     this.client.get('/issue/' + idOrKey, (issue) => {
       if (issue) {
         const fields = issue.fields
@@ -43,7 +43,7 @@ class Api {
 
   getIssues () {
     let jql = 'assignee=currentUser()' +
-      '+AND+status+in+("In+Progress","Under+Review")' +
+      '+AND+status+in+("To+Do","In+Progress","Under+Review")' +
       '+order+by+key+ASC'
 
     this.client.get('/search?jql=' + jql, (issues) => {
@@ -61,10 +61,10 @@ class Api {
     })
   }
 
-  getIssueWorklogs (key, id) {
-    let idOrKey = key || id
+  getIssueWorklogs (options) {
+    let idOrKey = options.key || options.id
     this.client.get('/issue/' + idOrKey + '/worklog', (worklogs) => {
-      if (worklogs.total > 0) {
+      if (worklogs && worklogs.total > 0) {
         let head = ['Worklog Id', 'Timespent', 'Comment', 'Worklog by', 'Created']
         let rows = []
         worklogs.worklogs.map((worklog) => {
