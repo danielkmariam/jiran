@@ -1,7 +1,7 @@
 #!/usr/local/bin/node
 
 var program = require('commander')
-var Table = require('cli-table')
+var TableRenderer = require('../lib/table_renderer')
 var Config = require('../lib/config')()
 var ConfigPrompt = require('../lib/config_prompt')
 var JiraClient = require('../lib/api/client')(Config.detail())
@@ -20,18 +20,14 @@ program
   .description('Show saved jira configuration')
   .action(() => {
     const currentConfig = Config.detail()
-    const table = new Table({
-      style: {compact: true, head: ['green']}
-    })
-    table.push(
+    TableRenderer.renderVertical([
       {'Username': currentConfig.username},
       {'Password': currentConfig.password},
       {'Host': currentConfig.host},
       {'Protocol': currentConfig.protocol},
       {'Port': currentConfig.port},
       {'Api version': currentConfig.apiVersion}
-    )
-    console.log(table.toString())
+    ])
   })
 
 program
