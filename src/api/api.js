@@ -1,5 +1,4 @@
-var Table = require('cli-table')
-var TableRenderer = require('../table_renderer')
+var TableRenderer = require('../cli/table_renderer')
 
 class Api {
   constructor (JiraClient) {

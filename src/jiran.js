@@ -1,9 +1,9 @@
 #!/usr/local/bin/node
 
 var program = require('commander')
-var TableRenderer = require('../lib/table_renderer')
-var Config = require('../lib/config')()
-var ConfigPrompt = require('../lib/config_prompt')
+var TableRenderer = require('../lib/cli/table_renderer')
+var Config = require('../lib/cli/config')()
+var ConfigPrompt = require('../lib/cli/config_prompt')
 var JiraClient = require('../lib/api/client')(Config.detail())
 var JiraApi = require('../lib/api/api')(JiraClient)
 

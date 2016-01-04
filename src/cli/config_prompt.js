@@ -1,5 +1,5 @@
 var prompt = require('prompt')
-var Config = require('../lib/config')()
+var Config = require('./config')()
 
 module.exports = () => {
   prompt.start()
