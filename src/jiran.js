@@ -40,8 +40,13 @@ program
 program
   .command('issues')
   .description('List current user issues')
-  .action(() => {
-    JiraApi.getIssues()
+  .option('-p, --project <name>', 'user issues by the project', String)
+  .action((options) => {
+    if (options.project) {
+      JiraApi.getIssues(options)
+    } else {
+      JiraApi.getIssues()
+    }
   })
 
 program

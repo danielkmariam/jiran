@@ -40,9 +40,14 @@ class Api {
     })
   }
 
-  getIssues () {
-    let jql = 'assignee=currentUser()' +
-      '+AND+status+in+("To+Do","In+Progress","Under+Review")' +
+  getIssues (options) {
+    let jql = ''
+    if (options && options.project) {
+      jql = 'project=' + options.project + '+AND+'
+    }
+
+    jql += 'assignee=currentUser()' +
+      '+AND+status+in+("To+Do","Open","In+Progress","Under+Review")' +
       '+order+by+key+ASC'
 
     this.client.get('/search?jql=' + jql, (issues) => {
