@@ -47,15 +47,15 @@ class Api {
     }
 
     jql += 'assignee=currentUser()' +
-      '+AND+status+in+("To+Do","Open","In+Progress","Under+Review")' +
+      '+AND+status+in+("Open","In+Progress","Under+Review")' +
       '+order+by+key+ASC'
 
     this.client.get('/search?jql=' + jql, (issues) => {
       if (issues && issues.total > 0) {
-        let head = ['Key', 'Status', 'Summary']
+        let head = ['Issue key', 'Status', 'Summary', 'Project key', ]
         let rows = []
         issues.issues.map((issue) => {
-          rows.push([issue.key, issue.fields.status.name, issue.fields.summary])
+          rows.push([issue.key, issue.fields.status.name, issue.fields.summary, issue.fields.project.key])
         })
 
         TableRenderer.render(head, rows)
