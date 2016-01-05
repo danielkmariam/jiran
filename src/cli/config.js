@@ -25,6 +25,4 @@ class Config {
   }
 }
 
-module.exports = (filenName) => {
-  return new Config(filenName)
-}
+module.exports = (filenName) => (new Config(filenName))

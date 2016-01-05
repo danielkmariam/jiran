@@ -49,7 +49,7 @@ class Client {
     this.options.url = this.buildUrl(url)
     return new Promise((resolve, reject) => {
       request.get(this.options, (error, response) => {
-        if (response.statusCode != 200) {
+        if (error || response.statusCode !== 200) {
           reject(response)
         } else {
           resolve(response.body)

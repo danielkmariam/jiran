@@ -1,11 +1,13 @@
 #!/usr/local/bin/node
 
 var program = require('commander')
+var colors = require('colors')
 var TableRenderer = require('../lib/cli/table_renderer')
+var Logger = require('../lib/logger')
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
 var JiraClient = require('../lib/api/client')(Config.detail())
-var JiraApi = require('../lib/api/api')(JiraClient)
+var JiraApi = require('../lib/api/api')(JiraClient, TableRenderer, Logger)
 
 program
   .version('0.0.1')

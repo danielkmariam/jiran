@@ -1,39 +1,37 @@
-var TableRenderer = require('../cli/table_renderer')
-var colors = require('colors')
-
 class Api {
-  constructor (JiraClient) {
+  constructor (JiraClient, TableRenderer, Logger) {
     if (!JiraClient) {
       throw new Error('JiraClient is not set')
     }
     this.client = JiraClient
+    this.tableRenderer = TableRenderer
+    this.logger = Logger
   }
 
   getUser () {
-    this.client
-      .get('/myself')
+    return this.client
+      .get('/myselfa')
       .then((response) => {
-        TableRenderer.renderTitle('Current user detail')
-        TableRenderer.renderVertical([
+        this.tableRenderer.renderTitle('Current user detail')
+        this.tableRenderer.renderVertical([
           {'Key': response.key},
           {'Name': response.displayName},
           {'Email Address': response.emailAddress}
         ])
       })
       .catch((error) => {
-        console.log(colors.red('%s: %s'), error.statusCode, error.body..errorMessages[0])
+        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
       })
   }
 
   getIssue (options) {
-    let idOrKey = options.key || options.id
-
-    this.client
-      .get('/issue/' + idOrKey)
+    return this.client
+      .get('/issue/' + (options.key || options.id))
       .then((issue) => {
         const fields = issue.fields
-        TableRenderer.renderTitle('Issue detail summary')
-        TableRenderer.renderVertical([
+
+        this.tableRenderer.renderTitle('Issue detail summary')
+        this.tableRenderer.renderVertical([
           {'Key': issue.key},
           {'Issue Type': fields.issuetype.name},
           {'Summary': fields.summary},
@@ -42,7 +40,7 @@ class Api {
         ])
       })
       .catch((error) => {
-        console.log(colors.red('%s: %s'), error.statusCode, error.body.errorMessages[0])
+        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
       })
   }
 
@@ -66,37 +64,35 @@ class Api {
             rows.push([issue.key, issue.fields.status.name, issue.fields.summary, issue.fields.project.key])
           })
 
-          TableRenderer.render(head, rows)
+          this.tableRenderer.render(head, rows)
         } else {
-          console.warn(colors.red('There are no issues for current user'))
+          this.logger.warn('There are no issues for current user')
         }
       })
       .catch((error) => {
-        console.log(colors.red('%s: %s'), error.statusCode, error.body.errorMessages[0])
+        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
       })
   }
 
   getIssueWorklogs (options) {
-    let idOrKey = options.key || options.id
-
-    this.client
-      .get('/issue/' + idOrKey + '/worklog')
-      .then((worklogs) => {
-        if (worklogs.total > 0) {
+    return this.client
+      .get('/issue/' + (options.key || options.id) + '/worklog')
+      .then((response) => {
+        if (response.total > 0) {
           let head = ['Worklog Id', 'Timespent', 'Comment', 'Worklog by', 'Created']
           let rows = []
-          worklogs.worklogs.map((worklog) => {
+          response.worklogs.map((worklog) => {
             rows.push([worklog.id, worklog.timeSpent, worklog.comment, worklog.author.displayName, worklog.created])
           })
-          TableRenderer.render(head, rows)
+          this.tableRenderer.render(head, rows)
         } else {
-          console.warn('No time logged for this issue'.red)
+          this.logger.warn('There are no worklogs for this issue')
         }
       })
       .catch((error) => {
-        console.log(colors.red('%s: %s'), error.statusCode, error.body.errorMessages[0])
+        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
       })
   }
 }
 
-module.exports = (JiraClient) => (new Api(JiraClient))
+module.exports = (JiraClient, TableRenderer, Logger) => (new Api(JiraClient, TableRenderer, Logger))
