@@ -54,7 +54,7 @@ class Api {
       '+AND+status+in+("Open","In+Progress","Under+Review")' +
       '+order+by+key+ASC'
 
-    this.client
+    return this.client
       .get('/search?jql=' + jql)
       .then((issues) => {
         if (issues.total > 0) {
