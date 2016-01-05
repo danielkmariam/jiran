@@ -1,11 +1,15 @@
 
 var Table = require('cli-table')
+var colors = require('colors')
 
 class TableRenderer {
   constructor () {
     this.header = {
       style: {compact: true, head: ['green']}
     }
+  }
+  renderTitle (title) {
+    console.log(colors.green(title))
   }
 
   renderVertical (body) {

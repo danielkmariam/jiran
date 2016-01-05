@@ -20,7 +20,7 @@ describe('Config', function () {
 
   after(function () {
     try {
-      fs.unlinkSync(Config.configFilePath)
+      fs.unlinkSync(Config.configFilename)
     } catch(e) {
       return false
     }
@@ -30,7 +30,7 @@ describe('Config', function () {
     
     Config.save(expected)
 
-    var actual = JSON.parse(fs.readFileSync(Config.configFilePath))
+    var actual = JSON.parse(fs.readFileSync(Config.configFilename))
 
     expect(expected.username).to.be.equal(actual.username)
     expect(expected.apiVersion).to.be.equal(actual.apiVersion)

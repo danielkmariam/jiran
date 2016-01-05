@@ -17,7 +17,8 @@ class Client {
       auth: {
         'user': this.username,
         'pass': this.password
-      }
+      },
+      json: true
     }
   }
 
@@ -30,8 +31,7 @@ class Client {
       'port',
       'apiVersion'
     ]
-
-    return keys.every((key) => { return Config.hasOwnProperty(key) })
+    return keys.every((key) => (Config.hasOwnProperty(key)))
   }
 
   buildUrl (pathname, apiVersion = this.apiVersion, basePath = 'rest/api/') {
@@ -47,12 +47,14 @@ class Client {
 
   get (url, callback) {
     this.options.url = this.buildUrl(url)
-
-    request.get(this.options, (error, response) => {
-      if (error || response.statusCode !== 200) {
-        return callback(error)
-      }
-      return callback(JSON.parse(response.body))
+    return new Promise((resolve, reject) => {
+      request.get(this.options, (error, response) => {
+        if (response.statusCode != 200) {
+          reject(response)
+        } else {
+          resolve(response.body)
+        }
+      })
     })
   }
 }

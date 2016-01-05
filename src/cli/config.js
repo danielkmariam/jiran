@@ -5,24 +5,22 @@ var userhome = require('user-home')
 
 class Config {
   constructor (fileName = 'config.json') {
-    this.configDirPath = path.join(userhome, '.jira', '/')
-    this.configFilePath = path.join(this.configDirPath, fileName)
-
+    this.configFilename = path.join(userhome, '.jira', '/', fileName)
     this.createFolder()
   }
 
   createFolder () {
-    mkdirp(this.configDirPath, '0755', (error) => {
+    mkdirp(path.dirname(this.configFilename), '0755', (error) => {
       if (error) console.error(error)
     })
   }
 
   save (configData) {
-    fs.writeFileSync(this.configFilePath, JSON.stringify(configData), 'utf8')
+    fs.writeFileSync(this.configFilename, JSON.stringify(configData), 'utf8')
   }
 
   detail () {
-    let configFile = fs.readFileSync(this.configFilePath)
+    let configFile = fs.readFileSync(this.configFilename)
     return JSON.parse(configFile)
   }
 }
