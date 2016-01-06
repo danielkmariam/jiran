@@ -1,13 +1,13 @@
 var Client = require('../../src/api/client')
 var Api = require('../../src/api/api')
-var TableRenderer = require('../../src/cli/table_renderer')
-var Logger = require('../../src/logger')
+var TableRenderer = require('../../src/util/table_renderer')
+var Logger = require('../../src/util/logger')
 
 var expect = require('chai').expect
 var assert = require('chai').assert
 var sinon = require('sinon')
 
-describe('Api', function () {
+describe('Jira Api', function () {
 
   var ConfigData, JiraClient, JiraApi
 

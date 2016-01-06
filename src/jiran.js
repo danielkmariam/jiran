@@ -2,8 +2,8 @@
 
 var program = require('commander')
 var colors = require('colors')
-var TableRenderer = require('../lib/cli/table_renderer')
-var Logger = require('../lib/logger')
+var TableRenderer = require('../lib/util/table_renderer')
+var Logger = require('../lib/util//logger')
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
 var JiraClient = require('../lib/api/client')(Config.detail())

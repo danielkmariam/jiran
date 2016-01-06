@@ -2,7 +2,7 @@ var Client = require('../../src/api/client')
 var request = require('request')
 var expect = require('chai').expect
 
-describe('Jira api client', function () {
+describe('Jira client', function () {
   describe('With valid config information', function () {
     var JiraClient, configData
 

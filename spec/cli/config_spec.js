@@ -1,6 +1,6 @@
 
 var fs = require('fs')
-var config = require('../src/cli/config')
+var config = require('../../src/cli/config')
 var expect = require('chai').expect
 
 describe('Config', function () {
