@@ -67,7 +67,7 @@ program
   .option('-k, --key <name>', 'issue identifier key', String)
   .option('-i, --id <name>', 'issue identifier Id', String)
   .action((options) => {
-    JiraApi.getIssueWorklogs(options)
+    JiraCli.renderIssueWorklogs(options)
   })
 
 program.parse(process.argv)

@@ -110,28 +110,24 @@ describe('Jira Api', function () {
       }]
     }))
 
-    JiraApi.tableRenderer.render = sinon.spy()
-
     return JiraApi.getIssueWorklogs({options: 'AAABB'})
-      .then(() => {
-        assert(JiraApi.tableRenderer.render.calledWith(
-          ['Worklog Id', 'Timespent', 'Comment', 'Worklog by', 'Created'],
-          [['12345', '1h 30m', 'worklog comment', 'logger name', '12/12/2015']]
-        ))
+      .then((worklogs) => {
+        expect(worklogs.length).to.be.equal(1)
+        expect(worklogs[0].id).to.be.equal('12345')
+        expect(worklogs[0].timeSpent).to.be.equal('1h 30m')
       })
   })
 
   it('It should render warning worklogs not found for an issue', function () {
+
     JiraApi.client.get = sinon.stub().returns(Promise.resolve({
       total: 0,
       worklogs: []
     }))
 
-    JiraApi.logger.warn = sinon.spy()
-
     return JiraApi.getIssueWorklogs({options: 'AAABB'})
-      .then(() => {
-        assert(JiraApi.logger.warn.calledWith('There are no worklogs for this issue'))
+      .catch((error) => {
+        expect(error.toString()).to.be.equal('Error: 404 - Issue Does Not Exist')
       })
   })
 

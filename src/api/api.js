@@ -75,19 +75,22 @@ class Api {
     return this.client
       .get('/issue/' + (options.key || options.id) + '/worklog')
       .then((response) => {
+        let worklogs = []
         if (response.total > 0) {
-          let head = ['Worklog Id', 'Timespent', 'Comment', 'Worklog by', 'Created']
-          let rows = []
           response.worklogs.map((worklog) => {
-            rows.push([worklog.id, worklog.timeSpent, worklog.comment, worklog.author.displayName, worklog.created])
+            worklogs.push({
+              'id': worklog.id,
+              'timeSpent': worklog.timeSpent,
+              'comment': worklog.comment,
+              'author': worklog.author.displayName,
+              'created': worklog.created
+            })
           })
-          this.tableRenderer.render(head, rows)
-        } else {
-          this.logger.warn('There are no worklogs for this issue')
         }
+        return worklogs
       })
       .catch((error) => {
-        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
+        throw new Error(error.statusCode + ': ' + error.body.errorMessages[0])
       })
   }
 }

@@ -1,6 +1,5 @@
 
 class Cli {
-
   constructor (JiraApi, TableRenderer, Logger) {
     this.api = JiraApi
     this.tableRenderer = TableRenderer
@@ -35,6 +34,32 @@ class Cli {
           {'Status': issue.status},
           {'Project': issue.projectName + ' (' + issue.projectKey + ')'}
         ])
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
+  renderIssueWorklogs (options) {
+    return this.api
+      .getIssueWorklogs(options)
+      .then((worklogs) => {
+        if (worklogs.length > 0) {
+          let head = ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created']
+          let rows = []
+          worklogs.map((worklog) => {
+            rows.push([
+              worklog.id,
+              worklog.timeSpent,
+              worklog.comment,
+              worklog.author,
+              worklog.created
+            ])
+          })
+          this.tableRenderer.render(head, rows)
+        } else {
+          this.logger.warn('There are no worklogs for this issue')
+        }
       })
       .catch((error) => {
         this.logger.error(error.toString())
