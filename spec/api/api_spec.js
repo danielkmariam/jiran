@@ -49,7 +49,7 @@ describe('Jira Api', function () {
       })
   })
 
-  it.only('It should throw exception when faild to fetch user data', function() {
+  it('It should throw exception when faild to fetch user data', function() {
     JiraApi.client.get = sinon.stub().returns(Promise.reject({
       statusCode: 404,
       body: { message: ['Unable to fetch user detail']}
@@ -61,12 +61,12 @@ describe('Jira Api', function () {
       })
   })
 
-  it('It should render jira issue detail', function() {
+  it('It should return jira issue detail', function() {
     JiraApi.client.get = sinon.stub().returns(Promise.resolve({
       key: 'some key',
       fields: {
         issuetype: {name: 'issue type'},
-        summary: 'summary',        
+        summary: 'summary',
         status: {name: 'status name'},
         project: {
           key: 'project key',
@@ -75,19 +75,14 @@ describe('Jira Api', function () {
       }
     }));
 
-    JiraApi.tableRenderer.renderTitle = sinon.spy();
-    JiraApi.tableRenderer.renderVertical = sinon.spy();
-
     return JiraApi.getIssue({key: 'AAABB'})
-      .then(() => {
-        assert(JiraApi.tableRenderer.renderTitle.calledWith('Issue detail summary'))
-        assert(JiraApi.tableRenderer.renderVertical.calledWith([
-          {'Key': 'some key'},
-          {'Issue Type': 'issue type'},
-          {'Summary': 'summary'},
-          {'Status': 'status name'},
-          {'Project': 'project name (project key)'}
-        ]))
+      .then((issue) => {
+        expect(issue.key).to.be.equal('some key')
+        expect(issue.type).to.be.equal('issue type')
+        expect(issue.summary).to.be.equal('summary')
+        expect(issue.status).to.be.equal('status name')
+        expect(issue.projectName).to.be.equal('project name')
+        expect(issue.projetcKey).to.be.equal('project key')
       })
   })
 
@@ -97,12 +92,9 @@ describe('Jira Api', function () {
       body: { errorMessages: ['Issue Does Not Exist']}
     }));
 
-    JiraApi.logger.error = sinon.spy()
-
     return JiraApi.getIssue({key: 'invalid'})
-      .then(() => { throw new Error()})
-      .catch(() => {
-        assert(JiraApi.logger.error.calledWith('404: Issue Does Not Exist'))
+      .catch((error) => {
+        expect(error.toString()).to.be.equal('Error: 404 - Issue Does Not Exist')
       })
   })
 

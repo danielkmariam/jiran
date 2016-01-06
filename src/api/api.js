@@ -23,23 +23,22 @@ class Api {
       })
   }
 
-  getIssue (options) {
+  getIssue (idOrKey) {
     return this.client
-      .get('/issue/' + (options.key || options.id))
+      .get('/issue/' + idOrKey)
       .then((issue) => {
         const fields = issue.fields
-
-        this.tableRenderer.renderTitle('Issue detail summary')
-        this.tableRenderer.renderVertical([
-          {'Key': issue.key},
-          {'Issue Type': fields.issuetype.name},
-          {'Summary': fields.summary},
-          {'Status': fields.status.name},
-          {'Project': fields.project.name + ' (' + fields.project.key + ')'}
-        ])
+        return {
+          'key': issue.key,
+          'type': fields.issuetype.name,
+          'summary': fields.summary,
+          'status': fields.status.name,
+          'projectName': fields.project.name,
+          'projetcKey': fields.project.key
+        }
       })
       .catch((error) => {
-        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
+        throw new Error(error.statusCode + ' - ' + error.body.errorMessages[0])
       })
   }
 

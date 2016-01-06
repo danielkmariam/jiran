@@ -59,4 +59,30 @@ describe('Jira Cli', function () {
         assert(JiraCli.logger.error.calledWith('404 - Unable to fetch user detail'))
       })
   })
+
+  it('It should render jira issue detail', function() {
+    JiraApi.getIssue = sinon.stub().returns(Promise.resolve({
+      key: 'some key',
+      type: 'issue type',
+      summary: 'summary',        
+      status: 'status name',
+      projectKey: 'project key',
+      projectName: 'project name'
+    }));
+
+    JiraCli.tableRenderer.renderTitle = sinon.spy();
+    JiraCli.tableRenderer.renderVertical = sinon.spy();
+
+    return JiraCli.renderIssue({key: 'AAABB'})
+      .then(() => {
+        assert(JiraCli.tableRenderer.renderTitle.calledWith('Issue detail summary'))
+        assert(JiraCli.tableRenderer.renderVertical.calledWith([
+          {'Key': 'some key'},
+          {'Issue Type': 'issue type'},
+          {'Summary': 'summary'},
+          {'Status': 'status name'},
+          {'Project': 'project name (project key)'}
+        ]))
+      })
+  })
 })

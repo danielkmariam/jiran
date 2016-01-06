@@ -58,7 +58,7 @@ program
   .option('-k, --key <name>', 'issue identifier key', String)
   .option('-i, --id <name>', 'issue identifier id', String)
   .action((options) => {
-    JiraApi.getIssue(options)
+    JiraCli.renderIssue(options)
   })
 
 program
