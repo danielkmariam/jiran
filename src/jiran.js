@@ -46,9 +46,9 @@ program
   .option('-p, --project <name>', 'user issues by the project', String)
   .action((options) => {
     if (options.project) {
-      JiraApi.getIssues(options)
+      JiraCli.renderIssues(options)
     } else {
-      JiraApi.getIssues()
+      JiraCli.renderIssues()
     }
   })
 
