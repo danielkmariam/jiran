@@ -34,39 +34,30 @@ describe('Jira Api', function () {
     expect(JiraApi.client.username).to.be.equal(ConfigData.username)
   })
 
-  it('It should render current user details', function() {
+  it('It should return current user details', function() {
     JiraApi.client.get = sinon.stub().returns(Promise.resolve({
       key: 'some key',
       displayName: 'display name',
       emailAddress: 'foo@bar.com'
     }));
 
-    JiraApi.tableRenderer.renderTitle = sinon.spy();
-    JiraApi.tableRenderer.renderVertical = sinon.spy();
-
     return JiraApi.getUser()
-      .then(() => {
-        assert(JiraApi.tableRenderer.renderTitle.calledWith('Current user detail'))
-        assert(JiraApi.tableRenderer.renderVertical.calledWith([
-          {'Key': 'some key'},
-          {'Name': 'display name'},
-          {'Email Address': 'foo@bar.com'}
-        ]))
+      .then((response) => {
+        expect(response.key).to.be.equal('some key')
+        expect(response.name).to.be.equal('display name')
+        expect(response.email).to.be.equal('foo@bar.com')
       })
   })
 
-  it('It should render 404 with text message for invalid user request', function() {
+  it.only('It should throw exception when faild to fetch user data', function() {
     JiraApi.client.get = sinon.stub().returns(Promise.reject({
       statusCode: 404,
-      body: { errorMessages: ['Unable to fetch user detail']}
+      body: { message: ['Unable to fetch user detail']}
     }));
 
-    JiraApi.logger.error = sinon.spy();
-
     return JiraApi.getUser()
-      .then(() => { throw new Error()})
-      .catch(() => {
-        assert(JiraApi.logger.error.calledWith('404: Unable to fetch user detail'))
+      .catch((error) => {
+        expect(error.toString()).to.be.equal('Error: 404 - Unable to fetch user detail')
       })
   })
 

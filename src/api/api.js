@@ -12,15 +12,14 @@ class Api {
     return this.client
       .get('/myself')
       .then((response) => {
-        this.tableRenderer.renderTitle('Current user detail')
-        this.tableRenderer.renderVertical([
-          {'Key': response.key},
-          {'Name': response.displayName},
-          {'Email Address': response.emailAddress}
-        ])
+        return {
+          key: response.key,
+          name: response.displayName,
+          email: response.emailAddress
+        }
       })
       .catch((error) => {
-        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
+        throw new Error(error.statusCode + ' - ' + error.body.message)
       })
   }
 

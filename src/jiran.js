@@ -8,6 +8,7 @@ var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
 var JiraClient = require('../lib/api/client')(Config.detail())
 var JiraApi = require('../lib/api/api')(JiraClient, TableRenderer, Logger)
+var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger)
 
 program
   .version('0.0.1')
@@ -36,7 +37,7 @@ program
   .command('user')
   .description('Show current user information')
   .action(() => {
-    JiraApi.getUser()
+    JiraCli.renderUser()
   })
 
 program
