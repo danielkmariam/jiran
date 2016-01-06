@@ -36,7 +36,7 @@ describe('Config', function () {
     expect(expected.apiVersion).to.be.equal(actual.apiVersion)
   })
 
-  it('It should return saved config information', function () {
+  it('It should render saved config information', function () {
     
     var actual = Config.detail()
 

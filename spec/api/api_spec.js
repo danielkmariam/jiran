@@ -138,7 +138,7 @@ describe('Jira Api', function () {
       })
   })
 
-  it('It should render worklogs not found for an issue', function () {
+  it('It should render warning worklogs not found for an issue', function () {
     JiraApi.client.get = sinon.stub().returns(Promise.resolve({
       total: 0,
       worklogs: []
@@ -149,6 +149,57 @@ describe('Jira Api', function () {
     return JiraApi.getIssueWorklogs({options: 'AAABB'})
       .then(() => {
         assert(JiraApi.logger.warn.calledWith('There are no worklogs for this issue'))
+      })
+  })
+
+  it('It should render all issues for current user', function () {
+    JiraApi.client.get = sinon.stub().returns(Promise.resolve({
+      total: 2,
+      issues: [
+        {
+          key: 'KEY_1',
+          fields: {
+            status: {name: 'In Progress'},
+            summary: 'Test issue 1',
+            project: {key: 'PROJECT_KEY_1'}  
+          }
+        },
+        {
+          key: 'KEY_2',
+          fields: {
+            status: {name: 'Open'},
+            summary: 'Test issue 2',
+            project: {key:' PROJECT_KEY_2'}
+          }
+        }
+      ]
+    }))
+
+    JiraApi.tableRenderer.render = sinon.spy()
+
+    return JiraApi.getIssues()
+      .then(() => {
+        assert(JiraApi.tableRenderer.render.calledWith(
+          ['Issue key', 'Status', 'Summary', 'Project key'],
+          [
+            [ 'KEY_1', 'In Progress', 'Test issue 1', 'PROJECT_KEY_1' ],
+            [ 'KEY_2', 'Open', 'Test issue 2', ' PROJECT_KEY_2' ]
+          ]
+        ))
+      })
+  })
+
+  it('It should render warning no issue found for current user', function () {
+    JiraApi.client.get = sinon.stub().returns(Promise.resolve({
+      total: 0,
+      issues: []
+    }))
+
+    JiraApi.logger.warn = sinon.spy()
+
+    return JiraApi.getIssues({options: 'PROJECT_KEY_1'})
+      .then(() => {
+        assert(JiraApi.logger.warn.calledWith('There are no issues for current user'))
       })
   })
 })

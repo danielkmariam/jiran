@@ -10,7 +10,7 @@ class Api {
 
   getUser () {
     return this.client
-      .get('/myselfa')
+      .get('/myself')
       .then((response) => {
         this.tableRenderer.renderTitle('Current user detail')
         this.tableRenderer.renderVertical([
@@ -56,14 +56,13 @@ class Api {
 
     return this.client
       .get('/search?jql=' + jql)
-      .then((issues) => {
-        if (issues.total > 0) {
+      .then((response) => {
+        if (response.total > 0) {
           let head = ['Issue key', 'Status', 'Summary', 'Project key']
           let rows = []
-          issues.issues.map((issue) => {
+          response.issues.map((issue) => {
             rows.push([issue.key, issue.fields.status.name, issue.fields.summary, issue.fields.project.key])
           })
-
           this.tableRenderer.render(head, rows)
         } else {
           this.logger.warn('There are no issues for current user')
