@@ -55,19 +55,21 @@ class Api {
     return this.client
       .get('/search?jql=' + jql)
       .then((response) => {
+        let issues = []
         if (response.total > 0) {
-          let head = ['Issue key', 'Status', 'Summary', 'Project key']
-          let rows = []
           response.issues.map((issue) => {
-            rows.push([issue.key, issue.fields.status.name, issue.fields.summary, issue.fields.project.key])
+            issues.push({
+              'key': issue.key,
+              'status': issue.fields.status.name,
+              'summary': issue.fields.summary,
+              'projectKey': issue.fields.project.key
+            })
           })
-          this.tableRenderer.render(head, rows)
-        } else {
-          this.logger.warn('There are no issues for current user')
         }
+        return issues
       })
       .catch((error) => {
-        this.logger.error(error.statusCode + ': ' + error.body.errorMessages[0])
+        throw new Error(error.statusCode + ': ' + error.body.errorMessages[0])
       })
   }
 

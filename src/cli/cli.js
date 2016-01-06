@@ -40,6 +40,31 @@ class Cli {
       })
   }
 
+  renderIssues (options) {
+    return this.api
+      .getIssues(options)
+      .then((issues) => {
+        if (issues.length > 0) {
+          let head = ['Issue key', 'Status', 'Summary', 'Project key']
+          let rows = []
+          issues.map((issue) => {
+            rows.push([
+              issue.key,
+              issue.status,
+              issue.summary,
+              issue.projectKey
+            ])
+          })
+          this.tableRenderer.render(head, rows)
+        } else {
+          this.logger.warn('There are no issues for current user')
+        }
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
   renderIssueWorklogs (options) {
     return this.api
       .getIssueWorklogs(options)

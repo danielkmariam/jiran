@@ -29,101 +29,149 @@ describe('Jira Cli', function () {
     JiraCli = Cli(JiraApi, TableRenderer, Logger)
   })
 
-  it('It should render current user details', function() {
-    JiraApi.getUser = sinon.stub().returns(Promise.resolve({
-      key: 'some key',
-      name: 'display name',
-      email: 'foo@bar.com'
-    }));
+  describe('User', function () {
+    it('It should render current user details', function() {
+      JiraApi.getUser = sinon.stub().returns(Promise.resolve({
+        key: 'some key',
+        name: 'display name',
+        email: 'foo@bar.com'
+      }));
 
-    JiraCli.tableRenderer.renderTitle = sinon.spy();
-    JiraCli.tableRenderer.renderVertical = sinon.spy();
+      JiraCli.tableRenderer.renderTitle = sinon.spy();
+      JiraCli.tableRenderer.renderVertical = sinon.spy();
 
-    return JiraCli.renderUser()
-      .then(() => {
-        assert(JiraCli.tableRenderer.renderTitle.calledWith('Current user detail'))
-        assert(JiraCli.tableRenderer.renderVertical.calledWith([
-          {'Key': 'some key'},
-          {'Name': 'display name'},
-          {'Email Address': 'foo@bar.com'}
-        ]))
-      })
+      return JiraCli.renderUser()
+        .then(() => {
+          assert(JiraCli.tableRenderer.renderTitle.calledWith('Current user detail'))
+          assert(JiraCli.tableRenderer.renderVertical.calledWith([
+            {'Key': 'some key'},
+            {'Name': 'display name'},
+            {'Email Address': 'foo@bar.com'}
+          ]))
+        })
+    })
+
+    it('It should render 404 with text message for invalid user request', function() {
+      JiraApi.getUser = sinon.stub().returns(Promise.reject('404 - Unable to fetch user detail'))
+      JiraCli.logger.error = sinon.spy();
+
+      return JiraCli.renderUser()
+        .catch(() => {
+          assert(JiraCli.logger.error.calledWith('404 - Unable to fetch user detail'))
+        })
+    })
   })
 
-  it('It should render 404 with text message for invalid user request', function() {
-    JiraApi.getUser = sinon.stub().returns(Promise.reject('404 - Unable to fetch user detail'))
-    JiraCli.logger.error = sinon.spy();
+  describe('Issue', function () {  
+    it('It should render jira issue detail', function() {
+      JiraApi.getIssue = sinon.stub().returns(Promise.resolve({
+        key: 'some key',
+        type: 'issue type',
+        summary: 'summary',        
+        status: 'status name',
+        projectKey: 'project key',
+        projectName: 'project name'
+      }));
 
-    return JiraCli.renderUser()
-      .catch(() => {
-        assert(JiraCli.logger.error.calledWith('404 - Unable to fetch user detail'))
-      })
+      JiraCli.tableRenderer.renderTitle = sinon.spy();
+      JiraCli.tableRenderer.renderVertical = sinon.spy();
+
+      return JiraCli.renderIssue({key: 'AAABB'})
+        .then(() => {
+          assert(JiraCli.tableRenderer.renderTitle.calledWith('Issue detail summary'))
+          assert(JiraCli.tableRenderer.renderVertical.calledWith([
+            {'Key': 'some key'},
+            {'Issue Type': 'issue type'},
+            {'Summary': 'summary'},
+            {'Status': 'status name'},
+            {'Project': 'project name (project key)'}
+          ]))
+        })
+    })
   })
 
-  it('It should render jira issue detail', function() {
-    JiraApi.getIssue = sinon.stub().returns(Promise.resolve({
-      key: 'some key',
-      type: 'issue type',
-      summary: 'summary',        
-      status: 'status name',
-      projectKey: 'project key',
-      projectName: 'project name'
-    }));
+  describe('User issues', function () {
+    it('It should render all issues for current user', function () {
+      JiraApi.getIssues = sinon.stub().returns(Promise.resolve([
+        {
+          key: 'KEY_1',
+          status: 'In Progress',
+          summary: 'Test issue 1',
+          projectKey: 'PROJECT_KEY_1'
+        },
+        {
+          key: 'KEY_2',
+          status: 'Open',
+          summary: 'Test issue 2',
+          projectKey: 'PROJECT_KEY_2'
+        }
+      ]))
 
-    JiraCli.tableRenderer.renderTitle = sinon.spy();
-    JiraCli.tableRenderer.renderVertical = sinon.spy();
+      JiraCli.tableRenderer.render = sinon.spy()
 
-    return JiraCli.renderIssue({key: 'AAABB'})
-      .then(() => {
-        assert(JiraCli.tableRenderer.renderTitle.calledWith('Issue detail summary'))
-        assert(JiraCli.tableRenderer.renderVertical.calledWith([
-          {'Key': 'some key'},
-          {'Issue Type': 'issue type'},
-          {'Summary': 'summary'},
-          {'Status': 'status name'},
-          {'Project': 'project name (project key)'}
-        ]))
-      })
+      return JiraCli.renderIssues()
+        .then(() => {
+          assert(JiraCli.tableRenderer.render.calledWith(
+            ['Issue key', 'Status', 'Summary', 'Project key'],
+            [ 
+              [ 'KEY_1', 'In Progress', 'Test issue 1', 'PROJECT_KEY_1' ],
+              [ 'KEY_2', 'Open', 'Test issue 2', 'PROJECT_KEY_2' ]
+            ]
+          ))
+        })
+    })
+
+    it('It should render warning message when no issue found for current user', function () {
+      JiraApi.getIssues = sinon.stub().returns(Promise.resolve([]))
+
+      JiraCli.logger.warn = sinon.spy()
+
+      return JiraCli.renderIssues({options: 'PROJECT_KEY_1'})
+        .then(() => {
+          assert(JiraCli.logger.warn.calledWith('There are no issues for current user'))
+        })
+    })
   })
 
-  it('It should render worklogs for an issue', function () {
-    JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.resolve([{
-      id: '12345',
-      timeSpent: '1h 30m',
-      comment: 'worklog comment',
-      author: 'logger name',
-      created: '12/12/2015'
-    }]))
+  describe('Issue worklogs', function () {
+    it('It should render worklogs for an issue', function () {
+      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.resolve([{
+        id: '12345',
+        timeSpent: '1h 30m',
+        comment: 'worklog comment',
+        author: 'logger name',
+        created: '12/12/2015'
+      }]))
 
-    JiraCli.tableRenderer.render = sinon.spy()
+      JiraCli.tableRenderer.render = sinon.spy()
 
-    return JiraCli.renderIssueWorklogs({options: 'AAABB'})
-      .then(() => {
-        assert(JiraCli.tableRenderer.render.calledWith(
-          ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created'],
-          [['12345', '1h 30m', 'worklog comment', 'logger name', '12/12/2015']]
-        ))
-      })
+      return JiraCli.renderIssueWorklogs({options: 'AAABB'})
+        .then(() => {
+          assert(JiraCli.tableRenderer.render.calledWith(
+            ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created'],
+            [['12345', '1h 30m', 'worklog comment', 'logger name', '12/12/2015']]
+          ))
+        })
+    })
+
+    it('It should render warning when worklogs not found for an issue', function () {
+      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.resolve([]))
+
+      JiraCli.logger.warn = sinon.spy()
+      return JiraCli.renderIssueWorklogs({options: 'AAABB'})
+        .then(() => {
+          assert(JiraCli.logger.warn.calledWith('There are no worklogs for this issue'))
+        })
+    })
+
+    it('It should render 404 with text message for invalid issue', function () {
+      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.reject('404 - Issue Does Not Exist'))
+      JiraCli.logger.error = sinon.spy();
+
+      return JiraCli.renderIssueWorklogs({options: 'AAABB'})
+        .catch(() => {
+          assert(JiraCli.logger.error.calledWith('404 - Issue Does Not Exist'))
+        })
+    })
   })
-
-  it('It should render warning when worklogs not found for an issue', function () {
-    JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.resolve([]))
-
-    JiraCli.logger.warn = sinon.spy()
-    return JiraCli.renderIssueWorklogs({options: 'AAABB'})
-      .then(() => {
-        assert(JiraCli.logger.warn.calledWith('There are no worklogs for this issue'))
-      })
-  })
-
-  it('It should render 404 with text message for invalid issue', function () {
-    JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.reject('404 - Issue Does Not Exist'))
-    JiraCli.logger.error = sinon.spy();
-
-    return JiraCli.renderIssueWorklogs({options: 'AAABB'})
-      .catch(() => {
-        assert(JiraCli.logger.error.calledWith('404 - Issue Does Not Exist'))
-      })
-  })
-
 })
