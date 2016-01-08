@@ -51,10 +51,9 @@ describe('Jira Api', function () {
     })
 
     it('It should throw exception when faild to fetch user data', function() {
-      JiraApi.client.get = sinon.stub().returns(Promise.reject({
-        statusCode: 404,
-        body: { message: ['Unable to fetch user detail']}
-      }));
+      JiraApi.client.get = sinon.stub().returns(Promise.reject(
+        new Error('404 - Unable to fetch user detail')
+      ));
 
       return JiraApi.getUser()
         .catch((error) => {
@@ -64,7 +63,7 @@ describe('Jira Api', function () {
   })
 
   describe('Issue', function () {  
-    it('It should return jira issue detail', function() {
+    it('It should return issue detail', function() {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         key: 'some key',
         fields: {
@@ -89,11 +88,10 @@ describe('Jira Api', function () {
         })
     })
 
-    it('It should render 404 with text message for invalid jira issue request', function() {
-      JiraApi.client.get = sinon.stub().returns(Promise.reject({
-        statusCode: 404,
-        body: { errorMessages: ['Issue Does Not Exist']}
-      }));
+    it('It should throw exception for invalid issue request', function() {
+      JiraApi.client.get = sinon.stub().returns(Promise.reject(
+        new Error('404 - Issue Does Not Exist')
+      ));
 
       return JiraApi.getIssue({key: 'invalid'})
         .catch((error) => {
@@ -136,23 +134,21 @@ describe('Jira Api', function () {
         })
     })
 
-    it('It should render warning when no issue found for current user', function () {
+    it('It should throw exception when no issue found for current user', function () {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         total: 0,
         issues: []
       }))
 
-      JiraApi.logger.warn = sinon.spy()
-
       return JiraApi.getIssues({options: 'PROJECT_KEY_1'})
-        .catch(() => {
-          assert(JiraApi.logger.warn.calledWith('There are no issues for current user'))
+        .catch((error) => {
+          expect(error.toString()).to.be.equal('Error: There are no issues for current user')
         })
     })
   })
 
   describe('Issue worklogs', function () {
-    it('It should render worklogs for an issue', function () {
+    it('It should return worklogs for an issue', function () {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         total: 1,
         worklogs: [{
@@ -172,7 +168,7 @@ describe('Jira Api', function () {
         })
     })
 
-    it('It should render warning worklogs not found for an issue', function () {
+    it('It should throe exception when there are no worklogs for an issue', function () {
 
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         total: 0,
@@ -181,7 +177,7 @@ describe('Jira Api', function () {
 
       return JiraApi.getIssueWorklogs({options: 'AAABB'})
         .catch((error) => {
-          expect(error.toString()).to.be.equal('Error: 404 - Issue Does Not Exist')
+          expect(error.toString()).to.be.equal('Error: There are no worklogs for this issue')
         })
     })
   })

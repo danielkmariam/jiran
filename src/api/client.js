@@ -50,7 +50,7 @@ class Client {
     return new Promise((resolve, reject) => {
       request.get(this.options, (error, response) => {
         if (error || response.statusCode !== 200) {
-          reject(response)
+          reject(new Error(response.statusCode + ' - ' + response.body.errorMessages[0]))
         } else {
           resolve(response.body)
         }

@@ -1,4 +1,3 @@
-
 class Cli {
   constructor (JiraApi, TableRenderer, Logger) {
     this.api = JiraApi
@@ -44,21 +43,17 @@ class Cli {
     return this.api
       .getIssues(options)
       .then((issues) => {
-        if (issues.length > 0) {
-          let head = ['Issue key', 'Status', 'Summary', 'Project key']
-          let rows = []
-          issues.map((issue) => {
-            rows.push([
-              issue.key,
-              issue.status,
-              issue.summary,
-              issue.projectKey
-            ])
-          })
-          this.tableRenderer.render(head, rows)
-        } else {
-          this.logger.warn('There are no issues for current user')
-        }
+        let head = ['Issue key', 'Status', 'Summary', 'Project key']
+        let rows = []
+        issues.map((issue) => {
+          rows.push([
+            issue.key,
+            issue.status,
+            issue.summary,
+            issue.projectKey
+          ])
+        })
+        this.tableRenderer.render(head, rows)
       })
       .catch((error) => {
         this.logger.error(error.toString())
@@ -69,25 +64,21 @@ class Cli {
     return this.api
       .getIssueWorklogs(options)
       .then((worklogs) => {
-        if (worklogs.length > 0) {
-          let head = ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created']
-          let rows = []
-          worklogs.map((worklog) => {
-            rows.push([
-              worklog.id,
-              worklog.timeSpent,
-              worklog.comment,
-              worklog.author,
-              worklog.created
-            ])
-          })
-          this.tableRenderer.render(head, rows)
-        } else {
-          this.logger.warn('There are no worklogs for this issue')
-        }
+        let head = ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created']
+        let rows = []
+        worklogs.map((worklog) => {
+          rows.push([
+            worklog.id,
+            worklog.timeSpent,
+            worklog.comment,
+            worklog.author,
+            worklog.created
+          ])
+        })
+        this.tableRenderer.render(head, rows)
       })
       .catch((error) => {
-        this.logger.error(error.toString())
+        this.logger.error(error.message)
       })
   }
 }

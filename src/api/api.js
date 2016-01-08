@@ -19,7 +19,7 @@ class Api {
         }
       })
       .catch((error) => {
-        throw new Error(error.statusCode + ' - ' + error.body.message)
+        throw new Error(error.message)
       })
   }
 
@@ -38,7 +38,7 @@ class Api {
         }
       })
       .catch((error) => {
-        throw new Error(error.statusCode + ' - ' + error.body.errorMessages[0])
+        throw new Error(error.message)
       })
   }
 
@@ -55,21 +55,23 @@ class Api {
     return this.client
       .get('/search?jql=' + jql)
       .then((response) => {
-        let issues = []
-        if (response.total > 0) {
-          response.issues.map((issue) => {
-            issues.push({
-              'key': issue.key,
-              'status': issue.fields.status.name,
-              'summary': issue.fields.summary,
-              'projectKey': issue.fields.project.key
-            })
-          })
+        if (response.total === 0) {
+          throw new Error('There are no issues for current user')
         }
+
+        let issues = []
+        response.issues.map((issue) => {
+          issues.push({
+            'key': issue.key,
+            'status': issue.fields.status.name,
+            'summary': issue.fields.summary,
+            'projectKey': issue.fields.project.key
+          })
+        })
         return issues
       })
       .catch((error) => {
-        throw new Error(error.statusCode + ': ' + error.body.errorMessages[0])
+        throw new Error(error.message)
       })
   }
 
@@ -77,22 +79,24 @@ class Api {
     return this.client
       .get('/issue/' + (options.key || options.id) + '/worklog')
       .then((response) => {
-        let worklogs = []
-        if (response.total > 0) {
-          response.worklogs.map((worklog) => {
-            worklogs.push({
-              'id': worklog.id,
-              'timeSpent': worklog.timeSpent,
-              'comment': worklog.comment,
-              'author': worklog.author.displayName,
-              'created': worklog.created
-            })
-          })
+        if (response.total === 0) {
+          throw new Error('There are no worklogs for this issue')
         }
+
+        let worklogs = []
+        response.worklogs.map((worklog) => {
+          worklogs.push({
+            'id': worklog.id,
+            'timeSpent': worklog.timeSpent,
+            'comment': worklog.comment,
+            'author': worklog.author.displayName,
+            'created': worklog.created
+          })
+        })
         return worklogs
       })
       .catch((error) => {
-        throw new Error(error.statusCode + ': ' + error.body.errorMessages[0])
+        throw new Error(error.message)
       })
   }
 }

@@ -122,12 +122,12 @@ describe('Jira Cli', function () {
     })
 
     it('It should render warning message when no issue found for current user', function () {
-      JiraApi.getIssues = sinon.stub().returns(Promise.resolve([]))
+      JiraApi.getIssues = sinon.stub().returns(Promise.reject('There are no issues for current user'))
 
       JiraCli.logger.warn = sinon.spy()
 
       return JiraCli.renderIssues({options: 'PROJECT_KEY_1'})
-        .then(() => {
+        .catch(() => {
           assert(JiraCli.logger.warn.calledWith('There are no issues for current user'))
         })
     })
@@ -155,17 +155,20 @@ describe('Jira Cli', function () {
     })
 
     it('It should render warning when worklogs not found for an issue', function () {
-      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.resolve([]))
+      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.reject('There are no worklogs for this issue'))
 
       JiraCli.logger.warn = sinon.spy()
       return JiraCli.renderIssueWorklogs({options: 'AAABB'})
-        .then(() => {
+        .catch(() => {
           assert(JiraCli.logger.warn.calledWith('There are no worklogs for this issue'))
         })
     })
 
     it('It should render 404 with text message for invalid issue', function () {
-      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.reject('404 - Issue Does Not Exist'))
+      JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.reject(
+        new Error('404 - Issue Does Not Exist')
+      ));
+
       JiraCli.logger.error = sinon.spy();
 
       return JiraCli.renderIssueWorklogs({options: 'AAABB'})
