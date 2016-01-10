@@ -1,7 +1,6 @@
 var Client = require('../../src/api/client')
 var Api = require('../../src/api/api')
-var TableRenderer = require('../../src/util/table_renderer')
-var Logger = require('../../src/util/logger')
+var Jql = require('../../src/api/jql')
 
 var expect = require('chai').expect
 var assert = require('chai').assert
@@ -22,7 +21,7 @@ describe('Jira Api', function () {
     };
 
     JiraClient = Client(ConfigData)   
-    JiraApi = Api(JiraClient, TableRenderer, Logger)
+    JiraApi = Api(JiraClient, Jql())
   })
 
   it('It should throw exception for missing Jira Client', function () {
@@ -124,7 +123,13 @@ describe('Jira Api', function () {
         ]
       }))
 
-      return JiraApi.getIssues()
+      let options = {
+        'open': false,
+        'in_progress': false,
+        'under_review': false,
+        'resolved': false
+      }
+      return JiraApi.getIssues(options)
         .then((issues) => {
           expect(issues.length).to.be.equal(2)
           expect(issues[0].key).to.be.equal('KEY_1')
@@ -140,7 +145,7 @@ describe('Jira Api', function () {
         issues: []
       }))
 
-      return JiraApi.getIssues({options: 'PROJECT_KEY_1'})
+      return JiraApi.getIssues({project: 'PROJECT_KEY_1'})
         .catch((error) => {
           expect(error.toString()).to.be.equal('Error: There are no issues for current user')
         })
@@ -160,7 +165,7 @@ describe('Jira Api', function () {
         }]
       }))
 
-      return JiraApi.getIssueWorklogs({options: 'AAABB'})
+      return JiraApi.getIssueWorklogs({key: 'AAABB'})
         .then((worklogs) => {
           expect(worklogs.length).to.be.equal(1)
           expect(worklogs[0].id).to.be.equal('12345')
@@ -175,7 +180,7 @@ describe('Jira Api', function () {
         worklogs: []
       }))
 
-      return JiraApi.getIssueWorklogs({options: 'AAABB'})
+      return JiraApi.getIssueWorklogs({key: 'AAABB'})
         .catch((error) => {
           expect(error.toString()).to.be.equal('Error: There are no worklogs for this issue')
         })

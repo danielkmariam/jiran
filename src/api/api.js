@@ -1,11 +1,10 @@
 class Api {
-  constructor (JiraClient, TableRenderer, Logger) {
+  constructor (JiraClient, Jql) {
     if (!JiraClient) {
       throw new Error('JiraClient is not set')
     }
     this.client = JiraClient
-    this.tableRenderer = TableRenderer
-    this.logger = Logger
+    this.jql = Jql
   }
 
   getUser () {
@@ -43,17 +42,8 @@ class Api {
   }
 
   getIssues (options) {
-    let jql = ''
-    if (options && options.project) {
-      jql = 'project=' + options.project + '+AND+'
-    }
-
-    jql += 'assignee=currentUser()' +
-      '+AND+status+in+("Open","In+Progress","Under+Review")' +
-      '+order+by+key+ASC'
-
     return this.client
-      .get('/search?jql=' + jql)
+      .get('/search?jql=' + this.jql.getQuery(options))
       .then((response) => {
         if (response.total === 0) {
           throw new Error('There are no issues for current user')
@@ -101,4 +91,4 @@ class Api {
   }
 }
 
-module.exports = (JiraClient, TableRenderer, Logger) => (new Api(JiraClient, TableRenderer, Logger))
+module.exports = (JiraClient, Jql) => (new Api(JiraClient, Jql))

@@ -4,10 +4,13 @@ var program = require('commander')
 var colors = require('colors')
 var TableRenderer = require('../lib/util/table_renderer')
 var Logger = require('../lib/util//logger')
+
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
+
+var Jql = require('../lib/api/jql')
 var JiraClient = require('../lib/api/client')(Config.detail())
-var JiraApi = require('../lib/api/api')(JiraClient, TableRenderer, Logger)
+var JiraApi = require('../lib/api/api')(JiraClient, Jql())
 var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger)
 
 program
@@ -43,9 +46,13 @@ program
 program
   .command('issues')
   .description('List current user issues')
-  .option('-p, --project <name>', 'user issues by the project', String)
+  .option('-p, --project <key>', 'user issues by the project', String)
+  .option('-o, --open [open]', 'Open issues', false)
+  .option('-i, --in_progress [progress]', 'In progress issues', false)
+  .option('-u, --under_review [reviw]', 'Under review issues', false)
+  .option('-r, --resolved [resolved]', 'Resolved issues', false)
   .action((options) => {
-    if (options.project) {
+    if (options) {
       JiraCli.renderIssues(options)
     } else {
       JiraCli.renderIssues()
