@@ -69,7 +69,7 @@ program
 
 program
   .command('pick')
-  .description('Move an issue to in progress status')
+  .description('Move an issue to in progress')
   .option('-k, --key <key>', 'issue identifier key', String)
   .action((options) => {
     if (options.key) {
@@ -79,7 +79,7 @@ program
 
 program
   .command('dev-to-check')
-  .description('Move an issue to dev to check status')
+  .description('Move an issue to dev to check')
   .option('-k, --key <key>', 'issue identifier key', String)
   .action((options) => {
     if (options.key) {
@@ -89,7 +89,7 @@ program
 
 program
   .command('close')
-  .description('Move and issue to close status')
+  .description('Close an issue')
   .option('-k, --key <name>', 'issue identifier key', String)
   .action((options) => {
     if (options.key) {
