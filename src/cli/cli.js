@@ -23,7 +23,7 @@ class Cli {
 
   renderIssue (options) {
     return this.api
-      .getIssue((options.key || options.id))
+      .getIssue((options.key))
       .then((issue) => {
         this.tableRenderer.renderTitle('Issue detail summary')
         this.tableRenderer.renderVertical([
@@ -54,6 +54,17 @@ class Cli {
           ])
         })
         this.tableRenderer.render(head, rows)
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
+  transitionIssue (options, state) {
+    return this.api
+      .transitionIssue(options.key, state)
+      .then((response) => {
+        this.logger.success('Issue ' + options.key + ' transitioned to ' + state + ' status')
       })
       .catch((error) => {
         this.logger.error(error.toString())

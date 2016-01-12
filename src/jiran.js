@@ -46,11 +46,11 @@ program
 program
   .command('issues')
   .description('List current user issues')
-  .option('-p, --project <key>', 'user issues by the project', String)
-  .option('-o, --open [open]', 'Open issues', false)
-  .option('-i, --in_progress [progress]', 'In progress issues', false)
-  .option('-u, --under_review [reviw]', 'Under review issues', false)
-  .option('-r, --resolved [resolved]', 'Resolved issues', false)
+  .option('-o, --open', 'open issues', false)
+  .option('-i, --in_progress', 'in progress issues', false)
+  .option('-u, --under_review', 'under review issues', false)
+  .option('-r, --resolved', 'resolved issues', false)
+  .option('-p, --project <key>', 'filter issues by project key', String)
   .action((options) => {
     if (options) {
       JiraCli.renderIssues(options)
@@ -60,19 +60,47 @@ program
   })
 
 program
-  .command('issue')
+  .command('issue <key>')
   .description('Show issue information')
-  .option('-k, --key <name>', 'issue identifier key', String)
-  .option('-i, --id <name>', 'issue identifier id', String)
+  .option('-k, --key <key>', 'issue identifier key', String)
   .action((options) => {
     JiraCli.renderIssue(options)
   })
 
 program
+  .command('pick')
+  .description('Move an issue to in progress status')
+  .option('-k, --key <key>', 'issue identifier key', String)
+  .action((options) => {
+    if (options.key) {
+      JiraCli.transitionIssue(options, 'in progress')
+    }
+  })
+
+program
+  .command('dev-to-check')
+  .description('Move an issue to dev to check status')
+  .option('-k, --key <key>', 'issue identifier key', String)
+  .action((options) => {
+    if (options.key) {
+      JiraCli.transitionIssue(options, 'under review')
+    }
+  })
+
+program
+  .command('close')
+  .description('Move and issue to close status')
+  .option('-k, --key <name>', 'issue identifier key', String)
+  .action((options) => {
+    if (options.key) {
+      JiraCli.transitionIssue(options, 'close')
+    }
+  })
+
+program
   .command('worklogs')
   .description('List worklogs for an issue')
-  .option('-k, --key <name>', 'issue identifier key', String)
-  .option('-i, --id <name>', 'issue identifier Id', String)
+  .option('-k, --key <key>', 'issue identifier key', String)
   .action((options) => {
     JiraCli.renderIssueWorklogs(options)
   })

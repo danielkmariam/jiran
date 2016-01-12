@@ -22,9 +22,9 @@ class Api {
       })
   }
 
-  getIssue (idOrKey) {
+  getIssue (key) {
     return this.client
-      .get('/issue/' + idOrKey)
+      .get('/issue/' + key)
       .then((issue) => {
         const fields = issue.fields
         return {
@@ -65,9 +65,9 @@ class Api {
       })
   }
 
-  getIssueWorklogs (options) {
+  getIssueWorklogs (key) {
     return this.client
-      .get('/issue/' + (options.key || options.id) + '/worklog')
+      .get('/issue/' + key + '/worklog')
       .then((response) => {
         if (response.total === 0) {
           throw new Error('There are no worklogs for this issue')
@@ -84,6 +84,34 @@ class Api {
           })
         })
         return worklogs
+      })
+      .catch((error) => {
+        throw new Error(error.message)
+      })
+  }
+
+  transitionIssue (key, toStatus) {
+    let url = '/issue/' + key + '/transitions'
+
+    return this.client
+      .get(url)
+      .then((response) => {
+        response.transitions.map((transition) => {
+          if (transition.to.name.toLowerCase().search(toStatus) !== -1) {
+            return this.transition(url, transition.id)
+          }
+        })
+      })
+      .catch((error) => {
+        throw new Error(error.message)
+      })
+  }
+
+  transition (url, transitionId) {
+    return this.client
+      .post(url, {'transition': {'id': transitionId}})
+      .then((response) => {
+        return response
       })
       .catch((error) => {
         throw new Error(error.message)

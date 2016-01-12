@@ -45,12 +45,41 @@ class Client {
     return decodeURIComponent(uri)
   }
 
-  get (url, callback) {
+  get (url) {
     this.options.url = this.buildUrl(url)
     return new Promise((resolve, reject) => {
       request.get(this.options, (error, response) => {
         if (error || response.statusCode !== 200) {
           reject(new Error(response.statusCode + ' - ' + response.body.errorMessages[0]))
+        } else {
+          resolve(response.body)
+        }
+      })
+    })
+  }
+
+  put (url, data) {
+    this.options.url = this.buildUrl(url)
+    this.options.body = data
+    return new Promise((resolve, reject) => {
+      request.put(this.options, (error, response) => {
+        if (error || response.statusCode !== 200) {
+          console.log(response)
+          reject('Error')
+        } else {
+          resolve(response.body)
+        }
+      })
+    })
+  }
+
+  post (url, data) {
+    this.options.url = this.buildUrl(url)
+    this.options.body = data
+    return new Promise((resolve, reject) => {
+      request.post(this.options, (error, response) => {
+        if (error || response.statusCode !== 204) {
+          reject(new Error('Error post failed'))
         } else {
           resolve(response.body)
         }
