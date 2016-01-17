@@ -97,14 +97,25 @@ class Api {
   }
 
   transitionIssue (key, toStatus) {
-    let url = '/issue/' + key + '/transitions'
+    return this.getTransitionByName(key, toStatus)
+      .then((transition) => {
+        if (!transition) {
+          throw new Error('\'' + toStatus + '\' transition is not avilable for issue ' + key)
+        }
+        return this.transition('/issue/' + key + '/transitions', transition.id)
+      })
+      .catch((error) => {
+        throw new Error(error.message)
+      })
+  }
 
+  getTransitionByName (key, name) {
     return this.client
-      .get(url)
+      .get('/issue/' + key + '/transitions')
       .then((response) => {
-        response.transitions.map((transition) => {
-          if (transition.to.name.toLowerCase().search(toStatus) !== -1) {
-            return this.transition(url, transition.id)
+        return response.transitions.every((transition) => {
+          if (transition.to.name.toLowerCase().search(name) !== -1) {
+            return transition
           }
         })
       })
