@@ -7,21 +7,6 @@ class Api {
     this.jql = Jql
   }
 
-  getUser () {
-    return this.client
-      .get('/myself')
-      .then((response) => {
-        return {
-          key: response.key,
-          name: response.displayName,
-          email: response.emailAddress
-        }
-      })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
-  }
-
   getIssue (key) {
     return this.client
       .get('/issue/' + key)

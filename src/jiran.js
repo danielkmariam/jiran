@@ -142,21 +142,6 @@ program
     JiraCli.renderDashboard(week)
   })
 
-program
-  .command('user')
-  .description('Show current user information')
-  .action(() => {
-    JiraCli.renderUser()
-  })
-
-program
-  .command('transitions')
-  .description('List available transitions for an issue')
-  .option('-k, --key <key>', 'issue identifier key', String)
-  .action((options) => {
-    JiraCli.renderTransitions(options)
-  })
-
 program.parse(process.argv)
 
 if (program.args.length === 0) {
