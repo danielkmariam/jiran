@@ -27,17 +27,12 @@ class Cli {
     return this.api
       .getIssues(options)
       .then((issues) => {
-        let head = ['Issue key', 'Status', 'Summary', 'Project key']
-        let rows = []
-        issues.map((issue) => {
-          rows.push([
-            issue.key,
-            issue.status,
-            issue.summary,
-            issue.projectKey
-          ])
-        })
-        this.tableRenderer.render(head, rows)
+        this.tableRenderer.render(
+          ['Issue key', 'Status', 'Summary', 'Project key'],
+          issues.map((issue) => {
+            return [issue.key, issue.status, issue.summary, issue.projectKey]
+          })
+        )
       })
       .catch((error) => {
         this.logger.error(error.toString())
@@ -48,15 +43,12 @@ class Cli {
     return this.api
       .getTransitions(options.key)
       .then((transitions) => {
-        let head = ['Id', 'Name']
-        let rows = []
-        transitions.map((transition) => {
-          rows.push([
-            transition.id,
-            transition.name
-          ])
-        })
-        this.tableRenderer.render(head, rows)
+        this.tableRenderer.render(
+          ['Id', 'Name'],
+          transitions.map((transition) => {
+            return [transition.id, transition.name]
+          })
+        )
       })
       .catch((error) => {
         this.logger.error(error.toString())
@@ -100,18 +92,18 @@ class Cli {
     return this.api
       .getIssueWorklogs(issue)
       .then((worklogs) => {
-        let head = ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created']
-        let rows = []
-        worklogs.map((worklog) => {
-          rows.push([
-            worklog.id,
-            worklog.timeSpent,
-            worklog.comment,
-            worklog.author,
-            worklog.created.split('T')[0]
-          ])
-        })
-        this.tableRenderer.render(head, rows)
+        this.tableRenderer.render(
+          ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created'],
+          worklogs.map((worklog) => {
+            return [
+              worklog.id,
+              worklog.timeSpent,
+              worklog.comment,
+              worklog.author,
+              worklog.created.split('T')[0]
+            ]
+          })
+        )
       })
       .catch((error) => {
         this.logger.error(error.message)
