@@ -33,34 +33,6 @@ describe('Jira Api', function () {
     expect(JiraApi.client.username).to.be.equal(ConfigData.username)
   })
 
-  describe('User', function () {
-    it('It should return current user details', function() {
-      JiraApi.client.get = sinon.stub().returns(Promise.resolve({
-        key: 'some key',
-        displayName: 'display name',
-        emailAddress: 'foo@bar.com'
-      }));
-
-      return JiraApi.getUser()
-        .then((response) => {
-          expect(response.key).to.be.equal('some key')
-          expect(response.name).to.be.equal('display name')
-          expect(response.email).to.be.equal('foo@bar.com')
-        })
-    })
-
-    it('It should throw exception when faild to fetch user data', function() {
-      JiraApi.client.get = sinon.stub().returns(Promise.reject(
-        new Error('404 - Unable to fetch user detail')
-      ));
-
-      return JiraApi.getUser()
-        .catch((error) => {
-          expect(error.toString()).to.be.equal('Error: 404 - Unable to fetch user detail')
-        })
-    })
-  })
-
   describe('Issue', function () {  
     it('It should return issue detail', function() {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({

@@ -5,22 +5,6 @@ class Cli {
     this.logger = Logger
   }
 
-  renderUser () {
-    return this.api
-      .getUser()
-      .then((user) => {
-        this.tableRenderer.renderTitle('Current user detail')
-        this.tableRenderer.renderVertical([
-          {'Key': user.key},
-          {'Name': user.name},
-          {'Email Address': user.email}
-        ])
-      })
-      .catch((error) => {
-        this.logger.error(error.toString())
-      })
-  }
-
   renderIssue (issue) {
     return this.api
       .getIssue((issue))

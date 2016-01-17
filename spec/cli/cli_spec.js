@@ -29,39 +29,6 @@ describe('Jira Cli', function () {
     JiraCli = Cli(JiraApi, TableRenderer, Logger)
   })
 
-  describe('User', function () {
-    it('It should render current user details', function() {
-      JiraApi.getUser = sinon.stub().returns(Promise.resolve({
-        key: 'some key',
-        name: 'display name',
-        email: 'foo@bar.com'
-      }));
-
-      JiraCli.tableRenderer.renderTitle = sinon.spy();
-      JiraCli.tableRenderer.renderVertical = sinon.spy();
-
-      return JiraCli.renderUser()
-        .then(() => {
-          assert(JiraCli.tableRenderer.renderTitle.calledWith('Current user detail'))
-          assert(JiraCli.tableRenderer.renderVertical.calledWith([
-            {'Key': 'some key'},
-            {'Name': 'display name'},
-            {'Email Address': 'foo@bar.com'}
-          ]))
-        })
-    })
-
-    it('It should render 404 with text message for invalid user request', function() {
-      JiraApi.getUser = sinon.stub().returns(Promise.reject('404 - Unable to fetch user detail'))
-      JiraCli.logger.error = sinon.spy();
-
-      return JiraCli.renderUser()
-        .catch(() => {
-          assert(JiraCli.logger.error.calledWith('404 - Unable to fetch user detail'))
-        })
-    })
-  })
-
   describe('Issue', function () {  
     it('It should render jira issue detail', function() {
       JiraApi.getIssue = sinon.stub().returns(Promise.resolve({
@@ -124,11 +91,10 @@ describe('Jira Cli', function () {
     it('It should render warning message when no issue found for current user', function () {
       JiraApi.getIssues = sinon.stub().returns(Promise.reject('There are no issues for current user'))
 
-      JiraCli.logger.warn = sinon.spy()
-
+      JiraCli.logger.error = sinon.spy()
       return JiraCli.renderIssues({options: 'PROJECT_KEY_1'})
         .catch(() => {
-          assert(JiraCli.logger.warn.calledWith('There are no issues for current user'))
+          assert(JiraCli.logger.error.calledWith('There are no issues for current user'))
         })
     })
   })
@@ -140,16 +106,15 @@ describe('Jira Cli', function () {
         timeSpent: '1h 30m',
         comment: 'worklog comment',
         author: 'logger name',
-        created: '12/12/2015'
+        created: '2015-12-12'
       }]))
 
       JiraCli.tableRenderer.render = sinon.spy()
-
-      return JiraCli.renderIssueWorklogs({options: 'AAABB'})
+      return JiraCli.renderIssueWorklogs('AAABB')
         .then(() => {
           assert(JiraCli.tableRenderer.render.calledWith(
             ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created'],
-            [['12345', '1h 30m', 'worklog comment', 'logger name', '12/12/2015']]
+            [['12345', '1h 30m', 'worklog comment', 'logger name', '2015-12-12']]
           ))
         })
     })
@@ -157,10 +122,10 @@ describe('Jira Cli', function () {
     it('It should render warning when worklogs not found for an issue', function () {
       JiraApi.getIssueWorklogs = sinon.stub().returns(Promise.reject('There are no worklogs for this issue'))
 
-      JiraCli.logger.warn = sinon.spy()
-      return JiraCli.renderIssueWorklogs({options: 'AAABB'})
-        .catch(() => {
-          assert(JiraCli.logger.warn.calledWith('There are no worklogs for this issue'))
+      JiraCli.logger.error = sinon.spy()
+      return JiraCli.renderIssueWorklogs('AAABB')
+        .catch((error) => {
+          assert(JiraCli.logger.error.calledWith('There are no worklogs for this issue'))
         })
     })
 
@@ -170,8 +135,7 @@ describe('Jira Cli', function () {
       ));
 
       JiraCli.logger.error = sinon.spy();
-
-      return JiraCli.renderIssueWorklogs({options: 'AAABB'})
+      return JiraCli.renderIssueWorklogs('AAABB')
         .catch(() => {
           assert(JiraCli.logger.error.calledWith('404 - Issue Does Not Exist'))
         })
