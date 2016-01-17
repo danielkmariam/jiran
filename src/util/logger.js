@@ -1,16 +1,20 @@
 var colors = require('colors')
 
 class Logger {
+  constructor (TableRenderer) {
+    this.tableRenderer = TableRenderer
+  }
+
   success (message) {
-    console.log(colors.green(message))
+    this.tableRenderer.renderCell([colors.green(message)])
   }
   warn (message) {
-    console.log(colors.yellow(message))
+    this.tableRenderer.renderCell([colors.yellow(message)])
   }
 
   error (message) {
-    console.log(colors.red(message))
+    this.tableRenderer.renderCell([colors.red(message)])
   }
 }
 
-module.exports = new Logger()
+module.exports = (TableRenderer) => new Logger(TableRenderer)

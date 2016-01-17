@@ -49,3 +49,4 @@ describe('Jira client', function () {
     })
   })
 })
+

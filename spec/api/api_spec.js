@@ -139,7 +139,7 @@ describe('Jira Api', function () {
         })
     })
 
-    it('It should throw exception when no issue found for current user', function () {
+    it('It should render message when no issue found for current user', function () {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         total: 0,
         issues: []
@@ -173,7 +173,7 @@ describe('Jira Api', function () {
         })
     })
 
-    it('It should throe exception when there are no worklogs for an issue', function () {
+    it('It should render message when there are no worklogs for an issue', function () {
 
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         total: 0,

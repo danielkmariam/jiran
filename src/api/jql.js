@@ -12,7 +12,7 @@ class Jql {
   }
 
   setProjectFilter (options) {
-    if (options && options.project) {
+    if (options.project) {
       this.query += '+AND+project=' + options.project
     }
   }

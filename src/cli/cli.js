@@ -21,9 +21,9 @@ class Cli {
       })
   }
 
-  renderIssue (options) {
+  renderIssue (issue) {
     return this.api
-      .getIssue((options.key))
+      .getIssue((issue))
       .then((issue) => {
         this.tableRenderer.renderTitle('Issue detail summary')
         this.tableRenderer.renderVertical([
@@ -60,20 +60,61 @@ class Cli {
       })
   }
 
-  transitionIssue (options, state) {
+  renderTransitions (options) {
     return this.api
-      .transitionIssue(options.key, state)
-      .then((response) => {
-        this.logger.success('Issue ' + options.key + ' transitioned to ' + state + ' status')
+      .getTransitions(options.key)
+      .then((transitions) => {
+        let head = ['Id', 'Name']
+        let rows = []
+        transitions.map((transition) => {
+          rows.push([
+            transition.id,
+            transition.name
+          ])
+        })
+        this.tableRenderer.render(head, rows)
       })
       .catch((error) => {
         this.logger.error(error.toString())
       })
   }
 
-  renderIssueWorklogs (options) {
+  transitionIssue (issue, status) {
     return this.api
-      .getIssueWorklogs(options)
+      .transitionIssue(issue, status)
+      .then((response) => {
+        this.logger.success('Issue ' + issue + ' transitioned to ' + status + ' status')
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
+  addComment (issue, comment) {
+    return this.api
+      .addComment(issue, comment)
+      .then((response) => {
+        this.logger.success('Comment added to issue ' + issue)
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
+  addWorklog (issue, timeSpent, comment) {
+    return this.api
+      .addWorklog(issue, timeSpent, comment)
+      .then((response) => {
+        this.logger.success('Worklog ' + timeSpent + ' added to issue ' + issue)
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
+  renderIssueWorklogs (issue) {
+    return this.api
+      .getIssueWorklogs(issue)
       .then((worklogs) => {
         let head = ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created']
         let rows = []
@@ -83,7 +124,7 @@ class Cli {
             worklog.timeSpent,
             worklog.comment,
             worklog.author,
-            worklog.created
+            worklog.created.split('T')[0]
           ])
         })
         this.tableRenderer.render(head, rows)

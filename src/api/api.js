@@ -72,18 +72,41 @@ class Api {
         if (response.total === 0) {
           throw new Error('There are no worklogs for this issue')
         }
-
         let worklogs = []
         response.worklogs.map((worklog) => {
           worklogs.push({
             'id': worklog.id,
             'timeSpent': worklog.timeSpent,
-            'comment': worklog.comment,
+            'comment': worklog.comment.replace(/\r?\n|\r/g, ''),
             'author': worklog.author.displayName,
             'created': worklog.created
           })
         })
         return worklogs
+      })
+      .catch((error) => {
+        throw new Error(error.message)
+      })
+  }
+
+  addComment (key, comment) {
+    return this.client
+      .post('/issue/' + key + '/comment', {'body': comment})
+      .then((response) => {
+        return response
+      })
+      .catch((error) => {
+        throw new Error(error.message)
+      })
+  }
+
+  addWorklog (key, timeSpent, comment) {
+    let url = '/issue/' + key + '/worklog'
+    let body = {'timeSpent': timeSpent, 'comment': comment}
+    return this.client
+      .post(url, body)
+      .then((response) => {
+        return response
       })
       .catch((error) => {
         throw new Error(error.message)

@@ -28,6 +28,16 @@ class TableRenderer {
     }
     console.log(table.toString())
   }
+
+  renderCell (text) {
+    let singleCell = new Table({
+      style: {compact: true, 'padding-left': 2, 'padding-right': 2}
+    })
+
+    singleCell.push(text)
+
+    console.log(singleCell.toString())
+  }
 }
 
 module.exports = new TableRenderer()

@@ -76,10 +76,11 @@ class Client {
   post (url, data) {
     this.options.url = this.buildUrl(url)
     this.options.body = data
+
     return new Promise((resolve, reject) => {
       request.post(this.options, (error, response) => {
-        if (error || response.statusCode !== 204) {
-          reject(new Error('Error post failed'))
+        if (error || response.statusCode.toString().split('')[0] !== '2') {
+          reject(new Error('Error:  post failed'))
         } else {
           resolve(response.body)
         }

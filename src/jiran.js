@@ -3,7 +3,7 @@
 var program = require('commander')
 var colors = require('colors')
 var TableRenderer = require('../lib/util/table_renderer')
-var Logger = require('../lib/util//logger')
+var Logger = require('../lib/util//logger')(TableRenderer)
 
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
@@ -13,27 +13,133 @@ var JiraClient = require('../lib/api/client')(Config.detail())
 var JiraApi = require('../lib/api/api')(JiraClient, Jql())
 var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger)
 
+const currentConfig = Config.detail()
+
 program
   .version('0.0.1')
 
 program
   .command('config')
-  .description('Create jira configuration')
-  .option('-s, --show <name>', 'show saved jira configuration', String)
+  .description('Create account configuration')
+  .option('-v, --view', 'view saved jira configuration', false)
+  .option('-p, --project <key>', 'save default project')
+  .option('-r, --rm_project', 'remove default project', false)
   .action((options) => {
-    if (options.show) {
-      const currentConfig = Config.detail()
+    if (options.view) {
       TableRenderer.renderVertical([
         {'Username': currentConfig.username},
         {'Password': currentConfig.password},
         {'Host': currentConfig.host},
         {'Protocol': currentConfig.protocol},
         {'Port': currentConfig.port},
-        {'Api version': currentConfig.apiVersion}
+        {'Api version': currentConfig.apiVersion},
+        {'Default project': currentConfig.project}
       ])
+    } else if (options.project) {
+      Config.setDefaultProject(options.project)
+      console.log(colors.green('Default project is saved'))
+    } else if (options.rm_default_project) {
+      Config.rmDefaultProject()
+      console.log(colors.red('Default project is removed'))
     } else {
       ConfigPrompt()
     }
+  })
+
+program
+  .command('issues')
+  .description('List current user issues')
+  .option('-p, --project [key]*', 'filter issues by project', currentConfig.project)
+  .option('-o, --open', 'include open issues', false)
+  .option('-i, --in_progress', 'include in-progress issues', false)
+  .option('-u, --under_review', 'include under-review issues', false)
+  .option('-r, --resolved', 'include resolved issues', false)
+  .action((options) => {
+    if (options) {
+      JiraCli.renderIssues(options)
+    } else {
+      JiraCli.renderIssues()
+    }
+  })
+
+program
+  .command('view <issue>')
+  .description('View issue information')
+  .action((issue) => {
+    JiraCli.renderIssue(issue)
+  })
+
+program
+  .command('pick <issue>')
+  .description('Start working on an issue')
+  .action((issue) => {
+    if (issue) {
+      JiraCli.transitionIssue(issue, 'in progress')
+    }
+  })
+
+program
+  .command('comment <issue> <comment>')
+  .description('Add comment to an issue')
+  .action((issue, comment) => {
+    JiraCli.addComment(issue, comment)
+  })
+
+program
+  .command('log-time <issue> <time_spent> [comment]')
+  .description('Log time to an issue')
+  .action((issue, time_spent, comment) => {
+    JiraCli.addWorklog(issue, time_spent, comment)
+  })
+
+program
+  .command('review <issue>')
+  .description('Move an issue for dev to review')
+  .action((issue) => {
+    if (issue) {
+      JiraCli.transitionIssue(issue, 'under review')
+    }
+  })
+
+program
+  .command('qa <issue>')
+  .description('Move an issue for QA to check')
+  .action((issue) => {
+    if (issue) {
+      JiraCli.transitionIssue(issue, 'qa')
+    }
+  })
+
+program
+  .command('close <issue>')
+  .description('Close an issue')
+  .action((issue) => {
+    if (issue) {
+      JiraCli.transitionIssue(issue, 'close')
+    }
+  })
+
+program
+  .command('open <issue>')
+  .description('Reopen an issue')
+  .action((issue) => {
+    if (issue) {
+      JiraCli.transitionIssue(issue, 'open')
+    }
+  })
+
+program
+  .command('worklogs <issue>')
+  .description('List worklogs for an issue')
+  .action((issue) => {
+    JiraCli.renderIssueWorklogs(issue)
+  })
+
+program
+  .command('dashboard [week]')
+  .description('View dashboard')
+  .action((week) => {
+    JiraCli.renderDashboard(week)
   })
 
 program
@@ -44,65 +150,11 @@ program
   })
 
 program
-  .command('issues')
-  .description('List current user issues')
-  .option('-o, --open', 'open issues', false)
-  .option('-i, --in_progress', 'in progress issues', false)
-  .option('-u, --under_review', 'under review issues', false)
-  .option('-r, --resolved', 'resolved issues', false)
-  .option('-p, --project <key>', 'filter issues by project key', String)
-  .action((options) => {
-    if (options) {
-      JiraCli.renderIssues(options)
-    } else {
-      JiraCli.renderIssues()
-    }
-  })
-
-program
-  .command('issue <key>')
-  .description('Show issue information')
+  .command('transitions')
+  .description('List available transitions for an issue')
   .option('-k, --key <key>', 'issue identifier key', String)
   .action((options) => {
-    JiraCli.renderIssue(options)
-  })
-
-program
-  .command('pick')
-  .description('Move an issue to in progress')
-  .option('-k, --key <key>', 'issue identifier key', String)
-  .action((options) => {
-    if (options.key) {
-      JiraCli.transitionIssue(options, 'in progress')
-    }
-  })
-
-program
-  .command('dev-to-check')
-  .description('Move an issue to dev to check')
-  .option('-k, --key <key>', 'issue identifier key', String)
-  .action((options) => {
-    if (options.key) {
-      JiraCli.transitionIssue(options, 'under review')
-    }
-  })
-
-program
-  .command('close')
-  .description('Close an issue')
-  .option('-k, --key <name>', 'issue identifier key', String)
-  .action((options) => {
-    if (options.key) {
-      JiraCli.transitionIssue(options, 'close')
-    }
-  })
-
-program
-  .command('worklogs')
-  .description('List worklogs for an issue')
-  .option('-k, --key <key>', 'issue identifier key', String)
-  .action((options) => {
-    JiraCli.renderIssueWorklogs(options)
+    JiraCli.renderTransitions(options)
   })
 
 program.parse(process.argv)
