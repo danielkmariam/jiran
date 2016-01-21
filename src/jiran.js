@@ -4,14 +4,14 @@ var program = require('commander')
 var colors = require('colors')
 var TableRenderer = require('../lib/util/table_renderer')
 var Logger = require('../lib/util//logger')(TableRenderer)
-
+var DateHelper = require('../lib/util/date_helper')
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
 
 var Jql = require('../lib/api/jql')
 var JiraClient = require('../lib/api/client')(Config.detail())
 var JiraApi = require('../lib/api/api')(JiraClient, Jql())
-var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger)
+var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger, DateHelper)
 
 const currentConfig = Config.detail()
 
@@ -136,10 +136,10 @@ program
   })
 
 program
-  .command('dashboard [week]')
+  .command('dashboard')
   .description('View dashboard')
-  .action((week) => {
-    JiraCli.renderDashboard(week)
+  .action(() => {
+    JiraCli.renderDashboard(currentConfig.username)
   })
 
 program.parse(process.argv)

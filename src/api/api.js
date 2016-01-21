@@ -57,17 +57,18 @@ class Api {
         if (response.total === 0) {
           throw new Error('There are no worklogs for this issue')
         }
-        let worklogs = []
-        response.worklogs.map((worklog) => {
-          worklogs.push({
+        return response.worklogs.map((worklog) => {
+          return {
             'id': worklog.id,
             'timeSpent': worklog.timeSpent,
+            'timeSpentSeconds': worklog.timeSpentSeconds,
             'comment': worklog.comment.replace(/\r?\n|\r/g, ''),
+            'authorName': worklog.author.name,
             'author': worklog.author.displayName,
-            'created': worklog.created
-          })
+            'created': worklog.created,
+            'started': worklog.started
+          }
         })
-        return worklogs
       })
       .catch((error) => {
         throw new Error(error.message)
@@ -132,6 +133,38 @@ class Api {
       })
       .catch((error) => {
         throw new Error(error.message)
+      })
+  }
+
+  getWorklogs (fromDate, toDate, assignee) {
+    let jql = 'worklogAuthor=' + assignee + '+AND+worklogDate>=' + fromDate + '+AND+worklogDate<=' + toDate
+
+    return this.client
+      .get('/search?jql=' + jql)
+      .then((issuesWithworklogs) => {
+        return Promise.all(issuesWithworklogs.issues.map((issue) => {
+          let issues = {
+            key: issue.key,
+            worklogs: []
+          }
+
+          return  this.client
+            .get('/issue/' + issue.key + '/worklog')
+            .then((response) => {
+              for (let worklog of response.worklogs) {
+                let started = worklog.started.split('T')[0]
+                if (worklog.author.name === assignee &&
+                  started >= fromDate && started < toDate) {
+                  issues.worklogs.push({
+                    'timeSpent': worklog.timeSpent,
+                    'timeSpentSeconds': worklog.timeSpentSeconds,
+                    'started': worklog.started
+                  })
+                }
+              }
+              return issues
+            })
+        }))
       })
   }
 }

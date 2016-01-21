@@ -64,7 +64,6 @@ class Client {
     return new Promise((resolve, reject) => {
       request.put(this.options, (error, response) => {
         if (error || response.statusCode !== 200) {
-          console.log(response)
           reject('Error')
         } else {
           resolve(response.body)

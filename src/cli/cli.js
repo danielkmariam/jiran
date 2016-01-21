@@ -1,8 +1,10 @@
+
 class Cli {
-  constructor (JiraApi, TableRenderer, Logger) {
+  constructor (JiraApi, TableRenderer, Logger, DateHelper) {
     this.api = JiraApi
     this.tableRenderer = TableRenderer
     this.logger = Logger
+    this.dateHelper = DateHelper
   }
 
   renderIssue (issue) {
@@ -109,6 +111,33 @@ class Cli {
         this.logger.error(error.message)
       })
   }
+
+  renderDashboard (assignee) {
+    let fromDate = this.dateHelper.getStartOfWeek()
+    let toDate = this.dateHelper.getEndOfWeek()
+    let days = this.dateHelper.getWeekDays()
+    let datesInRange = ['Issue'].concat(days)
+    let defaultworklogs = Array.apply(null, Array(days.length)).map( () => { return ''})
+
+    return this.api
+      .getWorklogs(fromDate, toDate, assignee)
+      .then((worklogs) => {
+        let rows = []
+        worklogs.map((issueWorklogs) => {
+          let logs = [issueWorklogs.key].concat(defaultworklogs)
+          issueWorklogs.worklogs.map((worklog) => {
+            let index = datesInRange.indexOf(worklog.started.split('T')[0])
+            let otherLog = logs[index] ? parseFloat(logs[index]) * 3600 : 0
+            logs[index] = (otherLog + worklog.timeSpentSeconds) / 3600 + 'h'
+          })
+          return rows.push(logs)
+        })
+        this.tableRenderer.render(datesInRange, rows)
+      })
+      .catch((error) => {
+        this.logger.error(error.message)
+      })
+  }
 }
 
-module.exports = (JiraApi, TableRenderer, Logger) => (new Cli(JiraApi, TableRenderer, Logger))
+module.exports = (JiraApi, TableRenderer, Logger, DateHelper) => (new Cli(JiraApi, TableRenderer, Logger, DateHelper))
