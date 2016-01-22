@@ -15,7 +15,7 @@ class DateHelper {
     let sunday = 7
 
     let datesInRange = []
-    for (var i = monday; i <= sunday; i++) {
+    for (let i = monday; i <= sunday; i++) {
       datesInRange.push(moment().isoWeekday(i).format('YYYY-MM-DD'))
     }
     return datesInRange

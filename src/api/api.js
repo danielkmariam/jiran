@@ -148,7 +148,7 @@ class Api {
             worklogs: []
           }
 
-          return  this.client
+          return this.client
             .get('/issue/' + issue.key + '/worklog')
             .then((response) => {
               for (let worklog of response.worklogs) {

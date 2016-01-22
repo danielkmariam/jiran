@@ -117,7 +117,7 @@ class Cli {
     let toDate = this.dateHelper.getEndOfWeek()
     let days = this.dateHelper.getWeekDays()
     let datesInRange = ['Issue'].concat(days)
-    let defaultworklogs = Array.apply(null, Array(days.length)).map( () => { return ''})
+    let defaultworklogs = Array.apply(null, Array(days.length)).map(() => { return '' })
 
     return this.api
       .getWorklogs(fromDate, toDate, assignee)
