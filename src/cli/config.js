@@ -23,6 +23,20 @@ class Config {
     let configFile = fs.readFileSync(this.configFilename)
     return JSON.parse(configFile)
   }
+
+  setDefaultProject (project) {
+    let configData = this.detail()
+    configData.project = project
+
+    this.save(configData)
+  }
+
+  removeDefaultProject (project) {
+    let configData = this.detail()
+    configData.project = ''
+
+    this.save(configData)
+  }
 }
 
 module.exports = (filenName) => (new Config(filenName))
