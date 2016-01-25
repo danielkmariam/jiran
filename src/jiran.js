@@ -1,7 +1,6 @@
 #!/usr/local/bin/node
 
 var program = require('commander')
-var colors = require('colors')
 var TableRenderer = require('../lib/util/table_renderer')
 var Logger = require('../lib/util//logger')(TableRenderer)
 var DateHelper = require('../lib/util/date_helper')
@@ -37,10 +36,10 @@ program
       ])
     } else if (options.project) {
       Config.setDefaultProject(options.project)
-      console.log(colors.green('Default project is saved'))
+      Logger.success('Default project is saved')
     } else if (options.rm_default_project) {
       Config.rmDefaultProject()
-      console.log(colors.red('Default project is removed'))
+      Logger.warn('Default project is removed')
     } else {
       ConfigPrompt()
     }
