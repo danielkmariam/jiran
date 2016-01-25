@@ -15,7 +15,7 @@ var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger, DateHelp
 const currentConfig = Config.detail()
 
 program
-  .version('0.0.1')
+  .version('1.0.0')
 
 program
   .command('config')
