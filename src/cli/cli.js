@@ -112,11 +112,12 @@ class Cli {
       })
   }
 
-  renderDashboard (assignee) {
-    let fromDate = this.dateHelper.getStartOfWeek()
-    let toDate = this.dateHelper.getEndOfWeek()
-    let days = this.dateHelper.getWeekDays()
-    let datesInRange = ['Issue'].concat(days)
+  renderDashboard (weekAgo, assignee) {
+    let fromDate = this.dateHelper.getStartOf(weekAgo)
+    let toDate = this.dateHelper.getEndOf(weekAgo)
+    let days = this.dateHelper.getWeekDaysFor(weekAgo)
+
+    let columns = ['Issue'].concat(days)
     let defaultworklogs = Array.apply(null, Array(days.length)).map(() => { return '' })
 
     return this.api
@@ -126,13 +127,13 @@ class Cli {
         worklogs.map((issueWorklogs) => {
           let logs = [issueWorklogs.key].concat(defaultworklogs)
           issueWorklogs.worklogs.map((worklog) => {
-            let index = datesInRange.indexOf(worklog.started.split('T')[0])
+            let index = columns.indexOf(worklog.started.split('T')[0])
             let otherLog = logs[index] ? parseFloat(logs[index]) * 3600 : 0
             logs[index] = (otherLog + worklog.timeSpentSeconds) / 3600 + 'h'
           })
           return rows.push(logs)
         })
-        this.tableRenderer.render(datesInRange, rows)
+        this.tableRenderer.render(columns, rows)
       })
       .catch((error) => {
         this.logger.error(error.message)

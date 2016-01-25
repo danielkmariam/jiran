@@ -49,7 +49,7 @@ program
 program
   .command('issues')
   .description('List current user issues')
-  .option('-p, --project [key]*', 'filter issues by project', currentConfig.project)
+  .option('-p, --project [key]', 'filter issues by project', currentConfig.project)
   .option('-o, --open', 'include open issues', false)
   .option('-i, --in_progress', 'include in-progress issues', false)
   .option('-u, --under_review', 'include under-review issues', false)
@@ -136,10 +136,10 @@ program
   })
 
 program
-  .command('dashboard')
-  .description('View dashboard')
-  .action(() => {
-    JiraCli.renderDashboard(currentConfig.username)
+  .command('dashboard [week]')
+  .description('View time spent over a week period, default to the current week')
+  .action((week) => {
+    JiraCli.renderDashboard(week, currentConfig.username)
   })
 
 program.parse(process.argv)
