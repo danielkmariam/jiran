@@ -4,7 +4,6 @@
   "description": "Command line tool for Jira",
   "author": "Daniel Kidanemariam",
   "license": "ISC",
-  "main": "lib/jiran.js",
   "scripts": {
     "compile": "babel -d lib/ src/",
     "pretest": "standard",
