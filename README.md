@@ -29,7 +29,9 @@ $ npm install -g jiran
       -V, --version  output the version number
 
 ## Usage
+  
   ### Configuration
+
   The first task that needs to be perofrmed before start using the tool is configuring Jira domain and credentials. To do so use the `config` comand which will prompt you to fill required information. Upon completing all the questions a `~/.jira/config.json` file accessable only to the current user will be created.
 
   To save jira information to config file
