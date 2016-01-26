@@ -9,6 +9,10 @@
     "pretest": "standard",
     "test": "npm run compile && mocha --recursive ./spec/ --compilers js:babel-core/register"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielkmariam/jiran.git"
+  },
   "bin": {
     "jiran": "./lib/jiran.js"
   },
