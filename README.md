@@ -30,17 +30,43 @@ $ npm install -g jiran
 
 ## Usage
   
-  ### Configuration
+  Configuration
 
-  The first task that needs to be perofrmed before start using the tool is configuring Jira domain and credentials. To do so use the `config` comand which will prompt you to fill required information. Upon completing all the questions a `~/.jira/config.json` file accessable only to the current user will be created.
+  The first task that needs to be perofrmed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jira/config.json` file accessable only to the current user will be created.
 
   To save jira information to config file
+
   ```
   $ jiran config
   ```
 
   To view what is saved in config file
+  
   ```
   $ jiran config -v
-
   ```
+
+  Using other commands
+
+    List all issues for the current user
+    ```
+    $ jiran issues 
+    ```
+    
+    Transition a task to in progress
+    ```
+    $ jiran pick <issue key>
+    ```    
+
+    Log time to a task
+    ```
+    $ jiran log-time <ABC-12> '<1h 30m>' '<comment foes here>'
+    ```
+
+    Time spent for a week, defaults to the current week. To view time spent for previous weeks pass optional number 1, 2 ...
+      1 - a week ago
+      2 - two weeks ago
+
+    ```
+    $ jiran dashboard 
+    ```
