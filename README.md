@@ -8,10 +8,13 @@ $ npm install -g jiran
 ```
 
 ## Available Commands
-    Usage: jiran [options] [command]
+
+  Usage: jiran [options] [command]
+
+    Commands:
 
       config [options]                         Create account configuration
-      issues [options] <project>               List issues of a project
+      issues [options]                         List current user issues
       view <issue>                             View issue information
       pick <issue>                             Start working on an issue
       comment <issue> <comment>                Add comment to an issue
