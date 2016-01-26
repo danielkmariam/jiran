@@ -52,16 +52,19 @@ $ npm install -g jiran
   Using other commands
 
     List all issues for the current user
+    
     ```
     $ jiran issues 
     ```
     
     Transition a task to in progress
+    
     ```
     $ jiran pick <issue key>
     ```    
 
     Log time to a task
+    
     ```
     $ jiran log-time <ABC-12> '<1h 30m>' '<comment foes here>'
     ```
