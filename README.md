@@ -57,7 +57,7 @@ $ npm install -g jiran
    
    Log time to a task
     
-    $ jiran log-time <ABC-12> '<1h 30m>' '<comment foes here>'
+    $ jiran log-time <ABC-12> '<1h 30m>' '<comment goes here>'
 
    Time spent for a week, defaults to the current week. To view time spent for previous weeks pass optional number 1, 2 ...
       1 - a week ago
