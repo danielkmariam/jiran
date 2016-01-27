@@ -9,6 +9,14 @@ class Config {
     this.createFolder()
   }
 
+  isSet () {
+    try {
+      return fs.statSync(this.configFilename).isFile()
+    } catch (err) {
+      return false
+    }
+  }
+
   createFolder () {
     mkdirp(path.dirname(this.configFilename), '0755', (error) => {
       if (error) console.error(error)
@@ -20,8 +28,7 @@ class Config {
   }
 
   detail () {
-    let configFile = fs.readFileSync(this.configFilename)
-    return JSON.parse(configFile)
+    return JSON.parse(fs.readFileSync(this.configFilename))
   }
 
   setDefaultProject (project) {

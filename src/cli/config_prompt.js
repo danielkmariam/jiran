@@ -26,11 +26,15 @@ module.exports = () => {
         required: true
       },
       port: {
-        description: 'Port <optional>:'.green
+        description: 'Port [optional]:'.green
       },
       apiVersion: {
         description: 'Api version:'.green,
         default: '2',
+        required: true
+      },
+      project: {
+        description: 'Default project [optional]:'.green,
         required: true
       }
     }

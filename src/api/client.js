@@ -3,7 +3,7 @@ var request = require('request')
 
 class Client {
   constructor (Config) {
-    if (!this.hasValidConfig(Config)) {
+    if (!Config || !this.hasValidConfig(Config)) {
       throw new Error('Missing Config attribute')
     }
 
