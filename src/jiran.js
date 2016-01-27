@@ -2,7 +2,7 @@
 
 var program = require('commander')
 var TableRenderer = require('../lib/util/table_renderer')
-var Logger = require('../lib/util//logger')(TableRenderer)
+var Logger = require('../lib/util/logger')(TableRenderer)
 var DateHelper = require('../lib/util/date_helper')
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
