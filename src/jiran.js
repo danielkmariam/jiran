@@ -7,12 +7,23 @@ var DateHelper = require('../lib/util/date_helper')
 var Config = require('../lib/cli/config')()
 var ConfigPrompt = require('../lib/cli/config_prompt')
 
+const currentConfig = (() => {
+  let config
+
+  try {
+    config = Config.detail()
+  } catch (e) {
+    console.log('jiran config file could not be loaded')
+    process.exit(1)
+  }
+
+  return config
+})()
+
 var Jql = require('../lib/api/jql')
-var JiraClient = require('../lib/api/client')(Config.detail())
+var JiraClient = require('../lib/api/client')(currentConfig)
 var JiraApi = require('../lib/api/api')(JiraClient, Jql())
 var JiraCli = require('../lib/cli/cli')(JiraApi, TableRenderer, Logger, DateHelper)
-
-const currentConfig = Config.detail()
 
 program
   .version('1.0.0')
