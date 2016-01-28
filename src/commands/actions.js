@@ -23,7 +23,6 @@ program
   .option('-r, --rm_project', 'remove default project', false)
   .action((options) => {
     if (options.view) {
-      console.log(currentConfig)
       TableRenderer.renderVertical([
         {'Username': currentConfig.username},
         {'Password': currentConfig.password},
@@ -35,7 +34,7 @@ program
       ])
     } else if (options.project) {
       Config.setDefaultProject(options.project)
-      Logger.success('Default project is saved')
+      Logger.success('Project ' + options.project + 'is saved as default')
     } else if (options.rm_default_project) {
       Config.rmDefaultProject()
       Logger.warn('Default project is removed')
