@@ -1,2 +1,5 @@
-# Don not push src to NPM
+# Don not push these files to NPM
 src/
+spec/
+.editorconfig
+.babelrc
