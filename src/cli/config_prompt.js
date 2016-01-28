@@ -34,7 +34,7 @@ module.exports = () => {
         required: true
       },
       project: {
-        description: 'Default project [optional]:'.green,
+        description: 'Default project [optional]:'.green
       }
     }
   }
