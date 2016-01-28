@@ -1,11 +1,13 @@
 # jiran - Jira Command line tool
 
+## Prerequisites
+
+    node >= 4.0.1
+
 ## Install
 To install it globally and access it from any where on your system, run this command
 
-```
-$ npm install -g jiran
-```
+    $ npm install -g jiran
 
 ## Available Commands
 
