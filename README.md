@@ -61,8 +61,12 @@ To install it globally and access it from any where on your system, run this com
     
     $ jiran log-time <ABC-12> '<1h 30m>' '<comment goes here>'
 
-   Time spent for a week, defaults to the current week. To view time spent for previous weeks pass optional number 1, 2 ...
-      1 - a week ago
-      2 - two weeks ago
+   Time spent for a week defaults to the current week. The value of week is a single number [1, 2, ...] to which how many weeks to go back and see the time logged for that week.
 
+Time logged for current week
+  
     $ jiran dashboard 
+
+Time logged for last week
+  
+    $ jiran dashboard 1 
