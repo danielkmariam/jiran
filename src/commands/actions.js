@@ -19,8 +19,8 @@ program
   .command('config')
   .description('Create account configuration')
   .option('-v, --view', 'view saved jira configuration', false)
-  .option('-p, --project <key>', 'save default project')
-  .option('-r, --rm_project', 'remove default project', false)
+  .option('-p, --project <key>', 'save default project to config')
+  .option('-r, --rm_project', 'remove default project form config', false)
   .action((options) => {
     if (options.view) {
       TableRenderer.renderVertical([
@@ -35,7 +35,7 @@ program
     } else if (options.project) {
       Config.setDefaultProject(options.project)
       Logger.success('Project ' + options.project + 'is saved as default')
-    } else if (options.rm_default_project) {
+    } else if (options.rm_project) {
       Config.rmDefaultProject()
       Logger.warn('Default project is removed')
     } else {
@@ -136,7 +136,7 @@ program
 
 program
   .command('dashboard [week]')
-  .description('View time spent over a week period, default to the current week')
+  .description('View time spent on a week. \nWeek is a single number [1, 2, 3, ...] to which how many weeks to go back')
   .action((week) => {
     JiraCli.renderDashboard(week, currentConfig.username)
   })

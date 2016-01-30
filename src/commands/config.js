@@ -6,8 +6,6 @@ var Logger = require('../../lib/util//logger')(TableRenderer)
 
 program
   .version('1.0.0')
-
-program
   .command('config')
   .description('Create account configuration')
   .action((options) => {
