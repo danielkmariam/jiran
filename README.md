@@ -20,7 +20,7 @@ To install it globally and access it from any where on your system, run this com
       view <issue>                             View issue information
       pick <issue>                             Start working on an issue
       comment <issue> <comment>                Add comment to an issue
-      log-time <issue> <time_spent> [comment]  Log time to an issue
+      log-time [options] <issue> <time_spent>  Log time to an issue
       review <issue>                           Move an issue for dev to review
       qa <issue>                               Move an issue for QA to check
       close <issue>                            Close an issue
@@ -59,7 +59,7 @@ To install it globally and access it from any where on your system, run this com
    
    Log time to a task
     
-    $ jiran log-time <ABC-12> '<1h 30m>' '<comment goes here>'
+    $ jiran log-time <ABC-12> '<1h 30m>'  -c '[comment goes here]' -d '[YYYY-MM-DD]'
 
    Time spent for a week defaults to the current week. The value of week is a single number [1, 2, ...] to which how many weeks to go back and see the time logged for that week.
 
