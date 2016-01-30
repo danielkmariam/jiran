@@ -83,10 +83,12 @@ program
   })
 
 program
-  .command('log-time <issue> <time_spent> [comment]')
+  .command('log-time <issue> <time_spent>')
   .description('Log time to an issue')
-  .action((issue, time_spent, comment) => {
-    JiraCli.addWorklog(issue, time_spent, comment)
+  .option('-c, --comment [value]', 'comment')
+  .option('-d, --date [value]', 'the date worklog will be added in \'YYYY-MM-DD\' format e.g. 2016-01-31', String)
+  .action((issue, time_spent, options) => {
+    JiraCli.addWorklog(issue, time_spent, options.comment, options.date)
   })
 
 program

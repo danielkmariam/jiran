@@ -1,6 +1,13 @@
 let moment = require('moment')
 
 class DateHelper {
+  getMoment (value) {
+    return value ? moment(value) : moment()
+  }
+
+  getWorklogDate (started) {
+    return this.getMoment(started).format('YYYY-MM-DD[T]hh:mm:ss.SSSZZ')
+  }
 
   getStartOf (weekAgo) {
     return this.getDateFor(weekAgo).startOf('isoweek').format('YYYY-MM-DD')

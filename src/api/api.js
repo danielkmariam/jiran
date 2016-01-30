@@ -86,9 +86,15 @@ class Api {
       })
   }
 
-  addWorklog (key, timeSpent, comment) {
+  addWorklog (key, timeSpent, comment, started) {
+    let data = {
+      'timeSpent': timeSpent,
+      'comment': comment,
+      'started': started
+    }
+
     return this.client
-      .post('/issue/' + key + '/worklog', {'timeSpent': timeSpent, 'comment': comment})
+      .post('/issue/' + key + '/worklog', data)
       .then((response) => {
         return response
       })

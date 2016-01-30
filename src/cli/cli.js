@@ -79,9 +79,11 @@ class Cli {
       })
   }
 
-  addWorklog (issue, timeSpent, comment) {
+  addWorklog (issue, timeSpent, comment, started) {
+    let dateStarted = this.dateHelper.getWorklogDate(started)
+
     return this.api
-      .addWorklog(issue, timeSpent, comment)
+      .addWorklog(issue, timeSpent, comment, dateStarted)
       .then((response) => {
         this.logger.success('Worklog ' + timeSpent + ' added to issue ' + issue)
       })
