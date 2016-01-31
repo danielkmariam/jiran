@@ -70,3 +70,6 @@ Time logged for current week
 Time logged for last week
   
     $ jiran dashboard 1 
+
+## License
+[MIT](https://github.com/danielkmariam/jiran/blob/master/LICENSE)
