@@ -37,7 +37,7 @@ To install it globally and access it from any where on your system, run this com
   
   **Configuration**
 
-  The first task that needs to be perofrmed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jira/config.json` file accessable only to the current user will be created.
+  The first task that needs to be perofrmed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jiran/config.json` file accessable only to the current user will be created.
 
   To save jira information to config file
 
