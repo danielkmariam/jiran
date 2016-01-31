@@ -136,7 +136,7 @@ program
 
 program
   .command('dashboard [week]')
-  .description('View time spent on a week. \nWeek is a single number [1, 2, 3, ...] to which how many weeks to go back')
+  .description('View time spent on a week. Week is a single number [1, 2, 3, ...] to which how many weeks to go back')
   .action((week) => {
     JiraCli.renderDashboard(week, currentConfig.username)
   })
