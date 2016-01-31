@@ -26,7 +26,7 @@ To install it globally and access it from any where on your system, run this com
       close <issue>                            Close an issue
       open <issue>                             Reopen an issue
       worklogs <issue>                         List worklogs for an issue
-      dashboard [week]                         View time spent over a week period, default to the current week
+      dashboard [week]                         View time spent on a week. Week is a single number [1, 2, 3, ...] to which how many weeks to go back
 
     Options:
 
