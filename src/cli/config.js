@@ -5,7 +5,7 @@ var userhome = require('user-home')
 
 class Config {
   constructor (fileName = 'config.json') {
-    this.configFilename = path.join(userhome, '.jira', '/', fileName)
+    this.configFilename = path.join(userhome, '.jiran', '/', fileName)
     this.createFolder()
   }
 
