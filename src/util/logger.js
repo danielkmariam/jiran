@@ -1,13 +1,18 @@
-var colors = require('colors')
+const colors = require('colors')
 
 class Logger {
   constructor (TableRenderer) {
     this.tableRenderer = TableRenderer
   }
 
+  static createLoggerWith (TableRenderer) {
+    return new Logger(TableRenderer)
+  }
+
   success (message) {
     this.tableRenderer.renderCell([colors.green(message)])
   }
+
   warn (message) {
     this.tableRenderer.renderCell([colors.yellow(message)])
   }
@@ -17,4 +22,4 @@ class Logger {
   }
 }
 
-module.exports = (TableRenderer) => new Logger(TableRenderer)
+module.exports = Logger

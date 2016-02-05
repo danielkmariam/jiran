@@ -20,8 +20,8 @@ describe('Jira Api', function () {
       apiVersion: '2'
     };
 
-    JiraClient = Client(ConfigData)   
-    JiraApi = Api(JiraClient, Jql())
+    JiraClient = Client.createClientWith(ConfigData)
+    JiraApi = Api.createApiWith(JiraClient, Jql.create())
   })
 
   it('It should throw exception for missing Jira Client', function () {

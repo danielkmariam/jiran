@@ -3,6 +3,10 @@ class Jql {
     this.query = 'assignee=currentUser()'
   }
 
+  static create () {
+    return new Jql()
+  }
+  
   getQuery (options) {
     this.setProjectFilter(options)
     this.setStatusFilter(options)
@@ -30,8 +34,8 @@ class Jql {
   getStatus (options) {
     let status = []
 
-    if (this.useDefaultStatus(options)) {
-      return this.getDefaultStatus()
+    if (useDefaultStatus(options)) {
+      return ['\"Open\"', '\"In+Progress\"', '\"Under+Review\"']
     }
 
     if (options.open) {
@@ -52,14 +56,10 @@ class Jql {
 
     return status
   }
-
-  getDefaultStatus () {
-    return ['\"Open\"', '\"In+Progress\"', '\"Under+Review\"']
-  }
-
-  useDefaultStatus (options) {
-    return !options.open && !options.in_progress && !options.under_review && !options.resolved
-  }
 }
 
-module.exports = () => (new Jql())
+module.exports = Jql
+
+const useDefaultStatus = (options) => {
+  return !options.open && !options.in_progress && !options.under_review && !options.resolved
+}

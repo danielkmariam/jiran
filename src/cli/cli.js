@@ -7,6 +7,10 @@ class Cli {
     this.dateHelper = DateHelper
   }
 
+  static createCliWith (JiraApi, TableRenderer, Logger, DateHelper) {
+    return new Cli(JiraApi, TableRenderer, Logger, DateHelper)
+  }
+
   renderIssue (issue) {
     return this.api
       .getIssue((issue))
@@ -143,4 +147,4 @@ class Cli {
   }
 }
 
-module.exports = (JiraApi, TableRenderer, Logger, DateHelper) => (new Cli(JiraApi, TableRenderer, Logger, DateHelper))
+module.exports = Cli

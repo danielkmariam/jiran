@@ -1,4 +1,4 @@
-let moment = require('moment')
+const moment = require('moment')
 
 class DateHelper {
   getMoment (value) {

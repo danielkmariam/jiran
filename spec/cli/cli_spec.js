@@ -23,10 +23,10 @@ describe('Jira Cli', function () {
       apiVersion: '2'
     };
 
-    JiraClient = Client(ConfigData)   
-    JiraApi = Api(JiraClient)
+    JiraClient = Client.createClientWith(ConfigData)
+    JiraApi = Api.createApiWith(JiraClient)
 
-    JiraCli = Cli(JiraApi, TableRenderer, Logger)
+    JiraCli = Cli.createCliWith(JiraApi, TableRenderer, Logger)
   })
 
   describe('Issue', function () {  

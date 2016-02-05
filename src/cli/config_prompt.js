@@ -1,5 +1,5 @@
 var prompt = require('prompt')
-var Config = require('./config')()
+var Config = require('./config').createConfigWith('config.json')
 
 module.exports = () => {
   prompt.start()
@@ -26,7 +26,8 @@ module.exports = () => {
         required: true
       },
       port: {
-        description: 'Port [optional]:'.green
+        description: 'Port [optional]:'.green,
+        default: '80'
       },
       apiVersion: {
         description: 'Api version:'.green,

@@ -1,10 +1,9 @@
-var expect = require('chai').expect
-var jql = require('../../src/api/jql')
+const expect = require('chai').expect
 
 describe('Jql', function () {
   var Jql, options
   beforeEach(function () {
-    Jql = jql()
+    Jql = require('../../src/api/jql').create()
     options = {
       'open': false,
       'in_progress': false,

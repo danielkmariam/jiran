@@ -1,13 +1,13 @@
 
-var fs = require('fs')
-var config = require('../../src/cli/config')
-var expect = require('chai').expect
+const fs = require('fs')
+const config = require('../../src/cli/config')
+const expect = require('chai').expect
 
 describe('Config', function () {
-  var Config, expected 
+  let Config, expected
   
   beforeEach(function () {
-    Config = config('config_test.json')
+    Config = config.createConfigWith('config_test.json')
     expected = {
       username: 'test',
       password: 'test',
@@ -30,7 +30,7 @@ describe('Config', function () {
     
     Config.save(expected)
 
-    var actual = JSON.parse(fs.readFileSync(Config.configFilename))
+    const actual = JSON.parse(fs.readFileSync(Config.configFilename))
 
     expect(expected.username).to.be.equal(actual.username)
     expect(expected.apiVersion).to.be.equal(actual.apiVersion)
@@ -38,7 +38,7 @@ describe('Config', function () {
 
   it('It should render saved config information', function () {
     
-    var actual = Config.detail()
+    const actual = Config.detail()
 
     expect(expected.username).to.be.equal(actual.username)
     expect(expected.password).to.be.equal(actual.password)

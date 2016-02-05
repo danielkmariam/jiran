@@ -1,8 +1,7 @@
-var program = require('commander')
-var ConfigPrompt = require('../../lib/cli/config_prompt')
-
-var TableRenderer = require('../../lib/util/table_renderer')
-var Logger = require('../../lib/util//logger')(TableRenderer)
+const program = require('commander')
+const ConfigPrompt = require('../cli/config_prompt')
+const TableRenderer = require('../util/table_renderer')
+const Logger = require('../util/logger').createLoggerWith(TableRenderer)
 
 program
   .version('1.0.0')

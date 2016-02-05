@@ -1,9 +1,9 @@
-var url = require('url')
-var request = require('request')
+const url = require('url')
+const request = require('request')
 
 class Client {
   constructor (Config) {
-    if (!Config || !this.hasValidConfig(Config)) {
+    if (!Config || !hasValidConfig(Config)) {
       throw new Error('Missing Config attribute')
     }
 
@@ -12,7 +12,7 @@ class Client {
     this.apiVersion = Config.apiVersion
     this.protocol = Config.protocol
     this.host = Config.host
-    this.port = Config.port
+    this.port = Config.port === '80' ? '' : Config.port
     this.options = {
       auth: {
         'user': this.username,
@@ -20,35 +20,23 @@ class Client {
       },
       json: true
     }
-  }
-
-  hasValidConfig (Config) {
-    let keys = [
-      'username',
-      'password',
-      'protocol',
-      'host',
-      'port',
-      'apiVersion'
-    ]
-    return keys.every((key) => (Config.hasOwnProperty(key)))
-  }
-
-  buildUrl (pathname, apiVersion = this.apiVersion, basePath = 'rest/api/') {
-    let uri = url.format({
+    this.domainData = {
       protocol: this.protocol,
       hostname: this.host,
-      port: this.port,
-      pathname: basePath + apiVersion + pathname
-    })
+      port: this.port
+    }
+  }
 
-    return decodeURIComponent(uri)
+  static createClientWith (ConfigData) {
+    return new Client(ConfigData)
   }
 
   get (url) {
-    this.options.url = this.buildUrl(url)
+    const options = this.options
+    options.url = buildUrl(this.domainData, url, this.apiVersion)
+
     return new Promise((resolve, reject) => {
-      request.get(this.options, (error, response) => {
+      request.get(options, (error, response) => {
         if (error || response.statusCode !== 200) {
           reject(new Error(response.statusCode + ' - ' + response.body.errorMessages[0]))
         } else {
@@ -59,10 +47,12 @@ class Client {
   }
 
   put (url, data) {
-    this.options.url = this.buildUrl(url)
-    this.options.body = data
+    const options = this.options
+    options.url = buildUrl(this.domainData, url, this.apiVersion)
+    options.body = data
+
     return new Promise((resolve, reject) => {
-      request.put(this.options, (error, response) => {
+      request.put(options, (error, response) => {
         if (error || response.statusCode !== 200) {
           reject('Error')
         } else {
@@ -73,11 +63,12 @@ class Client {
   }
 
   post (url, data) {
-    this.options.url = this.buildUrl(url)
-    this.options.body = data
+    const options = this.options
+    options.url = buildUrl(this.domainData, url, this.apiVersion)
+    options.body = data
 
     return new Promise((resolve, reject) => {
-      request.post(this.options, (error, response) => {
+      request.post(options, (error, response) => {
         if (error || response.statusCode.toString().split('')[0] !== '2') {
           reject(new Error('Error:  post failed'))
         } else {
@@ -88,4 +79,22 @@ class Client {
   }
 }
 
-module.exports = (Config) => (new Client(Config))
+module.exports = Client
+
+const hasValidConfig = (Config) => {
+  const keys = [
+    'username',
+    'password',
+    'protocol',
+    'host',
+    'port',
+    'apiVersion'
+  ]
+  return keys.every((key) => (Config.hasOwnProperty(key)))
+}
+
+const buildUrl = (domainData, pathname, apiVersion, basePath = 'rest/api/') => {
+  domainData.pathname = basePath + apiVersion + pathname
+  return decodeURIComponent(url.format(domainData))
+}
+

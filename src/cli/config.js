@@ -1,12 +1,15 @@
-var fs = require('fs')
-var path = require('path')
-var mkdirp = require('mkdirp')
-var userhome = require('user-home')
+const fs = require('fs')
+const path = require('path')
+const mkdirp = require('mkdirp')
+const userhome = require('user-home')
 
 class Config {
-  constructor (fileName = 'config.json') {
+  constructor (fileName) {
     this.configFilename = path.join(userhome, '.jira', '/', fileName)
-    this.createFolder()
+  }
+
+  static createConfigWith (filename) {
+    return new Config(filename)
   }
 
   isSet () {
@@ -17,13 +20,8 @@ class Config {
     }
   }
 
-  createFolder () {
-    mkdirp(path.dirname(this.configFilename), '0755', (error) => {
-      if (error) console.error(error)
-    })
-  }
-
   save (configData) {
+    createFolder(this.configFilename)
     fs.writeFileSync(this.configFilename, JSON.stringify(configData), 'utf8')
   }
 
@@ -31,7 +29,7 @@ class Config {
     return JSON.parse(fs.readFileSync(this.configFilename))
   }
 
-  setDefaultProject (project) {
+  saveDefaultProject (project) {
     let configData = this.detail()
     configData.project = project
 
@@ -46,4 +44,10 @@ class Config {
   }
 }
 
-module.exports = (filenName) => (new Config(filenName))
+module.exports = Config
+
+const createFolder = (filepath) => {
+  mkdirp(path.dirname(filepath), '0755', (error) => {
+    if (error) console.error(error)
+  })
+}

@@ -1,10 +1,14 @@
 class Api {
-  constructor (JiraClient, Jql) {
-    if (!JiraClient) {
-      throw new Error('JiraClient is not set')
+  constructor (Client, Jql) {
+    if (!Client) {
+      throw new Error('Client is not set')
     }
-    this.client = JiraClient
+    this.client = Client
     this.jql = Jql
+  }
+
+  static createApiWith (Client, Jql) {
+    return new Api(Client, Jql)
   }
 
   getIssue (key) {
@@ -146,7 +150,7 @@ class Api {
     return this.client
       .get('/search?jql=' + jql)
       .then((issuesWithworklogs) => {
-        return Promise.all(issuesWithworklogs.issues.map((issue) => {
+        const promises = issuesWithworklogs.issues.map((issue) => {
           let issues = {
             key: issue.key,
             worklogs: []
@@ -168,9 +172,10 @@ class Api {
               }
               return issues
             })
-        }))
+        })
+        return Promise.all(promises)
       })
   }
 }
 
-module.exports = (JiraClient, Jql) => (new Api(JiraClient, Jql))
+module.exports = Api

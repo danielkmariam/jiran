@@ -1,14 +1,14 @@
-var program = require('commander')
-var TableRenderer = require('../../lib/util/table_renderer')
-var Logger = require('../../lib/util//logger')(TableRenderer)
-var DateHelper = require('../../lib/util/date_helper')
-var Config = require('../../lib/cli/config')()
-var ConfigPrompt = require('../../lib/cli/config_prompt')
+const program = require('commander')
 
-var Jql = require('../../lib/api/jql')
-var JiraClient = require('../../lib/api/client')(Config.detail())
-var JiraApi = require('../../lib/api/api')(JiraClient, Jql())
-var JiraCli = require('../../lib/cli/cli')(JiraApi, TableRenderer, Logger, DateHelper)
+const TableRenderer = require('../util/table_renderer')
+const DateHelper = require('../util/date_helper')
+const Logger = require('../util/logger').createLoggerWith(TableRenderer)
+const Config = require('../cli/config').createConfigWith('config.json')
+const ConfigPrompt = require('../cli/config_prompt')
+const Jql = require('../api/jql')
+const JiraClient = require('../api/client').createClientWith(Config.detail())
+const JiraApi = require('../api/api').createApiWith(JiraClient, Jql.create())
+const JiraCli = require('../cli/cli').createCliWith(JiraApi, TableRenderer, Logger, DateHelper)
 
 const currentConfig = Config.detail()
 
@@ -33,8 +33,8 @@ program
         {'Default project': currentConfig.project}
       ])
     } else if (options.project) {
-      Config.setDefaultProject(options.project)
-      Logger.success('Project ' + options.project + 'is saved as default')
+      Config.saveDefaultProject(options.project)
+      Logger.success('Project \'' + options.project + '\' is saved as default')
     } else if (options.rm_project) {
       Config.rmDefaultProject()
       Logger.warn('Default project is removed')

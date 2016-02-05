@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-var Config = require('../lib/cli/config')()
+const Config = require('./cli/config').createConfigWith('config.json')
 
 if (!Config.isSet()) {
-  require('../lib/commands/config')
+  require('./commands/config')
 } else {
-  require('../lib/commands/actions')
+  require('./commands/actions')
 }

@@ -1,6 +1,5 @@
-
-var Table = require('cli-table')
-var colors = require('colors')
+const Table = require('cli-table')
+const colors = require('colors')
 
 class TableRenderer {
   constructor () {
@@ -13,20 +12,12 @@ class TableRenderer {
   }
 
   renderVertical (body) {
-    this.renderTable(body)
+    renderTable(this.header, body)
   }
 
   render (head, body) {
     this.header.head = head
-    this.renderTable(body)
-  }
-
-  renderTable (body) {
-    let table = new Table(this.header)
-    for (let item of body) {
-      table.push(item)
-    }
-    console.log(table.toString())
+    renderTable(this.header, body)
   }
 
   renderCell (text) {
@@ -41,3 +32,11 @@ class TableRenderer {
 }
 
 module.exports = new TableRenderer()
+
+const renderTable = (header, body) => {
+  let table = new Table(header)
+  for (let item of body) {
+    table.push(item)
+  }
+  console.log(table.toString())
+}
