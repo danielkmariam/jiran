@@ -20,6 +20,10 @@ class Logger {
   error (message) {
     this.tableRenderer.renderCell([colors.red(message)])
   }
+
+  log (message) {
+    console.log(message)
+  }
 }
 
 module.exports = Logger

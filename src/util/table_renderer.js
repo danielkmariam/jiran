@@ -29,6 +29,12 @@ class TableRenderer {
 
     console.log(singleCell.toString())
   }
+
+  renderHeadless (body) {
+    let table = new Table()
+    table.push(body)
+    console.log(table.toString())
+  }
 }
 
 module.exports = new TableRenderer()
