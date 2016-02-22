@@ -4,7 +4,7 @@ const TableRenderer = require('../util/table_renderer')
 const DateHelper = require('../util/date_helper')
 const Logger = require('../util/logger').createLoggerWith(TableRenderer)
 const Config = require('../cli/config').createConfigWith('config.json')
-const ConfigPrompt = require('../cli/config_prompt')
+const ConfigPrompt = require('../cli/config_prompt').createPromptWith(Config)
 const Jql = require('../api/jql')
 const JiraClient = require('../api/client').createClientWith(Config.detail())
 const JiraApi = require('../api/api').createApiWith(JiraClient, Jql.create())
@@ -23,6 +23,7 @@ program
   .option('-r, --rm_project', 'remove default project form config', false)
   .action((options) => {
     if (options.view) {
+      TableRenderer.renderTitle('Current configuration detail')
       TableRenderer.renderVertical([
         {'Username': currentConfig.username},
         {'Password': currentConfig.password},
@@ -30,7 +31,8 @@ program
         {'Protocol': currentConfig.protocol},
         {'Port': currentConfig.port},
         {'Api version': currentConfig.apiVersion},
-        {'Default project': currentConfig.project}
+        {'Default project': currentConfig.project},
+        {'Default daily hours ': currentConfig.daily_hours || '7.5h'}
       ])
     } else if (options.project) {
       Config.saveDefaultProject(options.project)
@@ -39,7 +41,10 @@ program
       Config.rmDefaultProject()
       Logger.warn('Default project is removed')
     } else {
-      ConfigPrompt()
+      const message = 'You are about to edit existing configuration!'
+      TableRenderer.renderTitle(message)
+      Logger.log('─'.repeat(message.length).gray)
+      ConfigPrompt.edit()
     }
   })
 

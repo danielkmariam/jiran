@@ -1,5 +1,7 @@
 const program = require('commander')
-const ConfigPrompt = require('../cli/config_prompt')
+const Config = require('../cli/config').createConfigWith('config.json')
+const ConfigPrompt = require('../cli/config_prompt').createPromptWith(Config)
+
 const TableRenderer = require('../util/table_renderer')
 const Logger = require('../util/logger').createLoggerWith(TableRenderer)
 
@@ -8,7 +10,11 @@ program
   .command('config')
   .description('Create account configuration')
   .action((options) => {
-    ConfigPrompt()
+    const message = 'Adding new configuration'
+    TableRenderer.renderTitle(message)
+    Logger.log('─'.repeat(message.length).gray)
+
+    ConfigPrompt.create()
   })
 
 program.parse(process.argv)
