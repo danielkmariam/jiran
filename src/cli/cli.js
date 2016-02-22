@@ -118,28 +118,49 @@ class Cli {
       })
   }
 
-  renderDashboard (weekAgo, assignee) {
-    let fromDate = this.dateHelper.getStartOf(weekAgo)
-    let toDate = this.dateHelper.getEndOf(weekAgo)
-    let days = this.dateHelper.getWeekDaysFor(weekAgo)
+  renderDashboard (weekAgo, config) {
+    const DAY_WORK_HOUR = config.daily_hours || '7.5h'
+    const fromDate = this.dateHelper.getStartOf(weekAgo)
+    const toDate = this.dateHelper.getEndOf(weekAgo)
+    const days = this.dateHelper.getWeekDaysFor(weekAgo)
+    const formattedFromDate = this.dateHelper.getMoment(fromDate).format('ddd, Do MMM YYYY')
+    const formattedToDate = this.dateHelper.getMoment(toDate).format('ddd, Do MMM YYYY')
 
-    let columns = ['Issue'].concat(days)
-    let defaultworklogs = Array.apply(null, Array(days.length)).map(() => { return '' })
+    const defaultworklogs = Array(days.length).fill('')
+    const columns = ['Issue'].concat(days)
+    const totals = ['Total'.green].concat(defaultworklogs)
+    let issueKeyLength = 0
 
     return this.api
-      .getWorklogs(fromDate, toDate, assignee)
+      .getWorklogs(fromDate, toDate, config.username)
       .then((worklogs) => {
         let rows = []
         worklogs.map((issueWorklogs) => {
-          let logs = [issueWorklogs.key].concat(defaultworklogs)
+          let timeLoggedInSeconds = [issueWorklogs.key].concat(defaultworklogs)
           issueWorklogs.worklogs.map((worklog) => {
             let index = columns.indexOf(worklog.started.split('T')[0])
-            let otherLog = logs[index] ? parseFloat(logs[index]) * 3600 : 0
-            logs[index] = (otherLog + worklog.timeSpentSeconds) / 3600 + 'h'
+            let prevTimeLog = timeLoggedInSeconds[index] ? timeLoggedInSeconds[index] : 0
+            let prevTotalTime = totals[index] ? totals[index] : 0
+
+            timeLoggedInSeconds[index] = prevTimeLog + worklog.timeSpentSeconds
+            totals[index] = prevTotalTime + worklog.timeSpentSeconds
           })
-          return rows.push(logs)
+
+          issueKeyLength = issueWorklogs.key.length > issueKeyLength ? issueWorklogs.key.length : issueKeyLength
+
+          return rows.push(changeTimeSpentToHours(timeLoggedInSeconds))
         })
-        this.tableRenderer.render(columns, rows)
+
+        if (rows.length > 0) {
+          rows.push(innerTotalLines(days, issueKeyLength))
+          rows.push(changeTotalTimeSpentToHours(totals, DAY_WORK_HOUR))
+
+          this.logger.log(`Time logged for week staring on ${formattedFromDate} to ${formattedToDate}`)
+          this.tableRenderer.render(columns, rows)
+          this.logger.log(`Total daily hours is ${DAY_WORK_HOUR}\n`)
+        } else {
+          this.logger.warn('No time logged for this week')
+        }
       })
       .catch((error) => {
         this.logger.error(error.message)
@@ -148,3 +169,24 @@ class Cli {
 }
 
 module.exports = Cli
+
+const changeTimeSpentToHours = (timeSpentSeconds) => {
+  return timeSpentSeconds.map((timeSpent, key) => {
+    return (key === 0 || timeSpent === '') ? timeSpent : (timeSpent / 3600).toFixed(1) + 'h'
+  })
+}
+
+const changeTotalTimeSpentToHours = (timeSpentSeconds, dailyHour) => {
+  return timeSpentSeconds.map((timeSpent, key) => {
+    if (key === 0 || timeSpent === '') {
+      return timeSpent
+    }
+
+    const timeSpentInHour = (timeSpent / 3600).toFixed(1) + 'h'
+    return (timeSpentInHour !== dailyHour) ? timeSpentInHour.red : timeSpentInHour.green
+  })
+}
+
+const innerTotalLines = (days, lineLength) => {
+  return Array(days.length + 1).fill('─'.repeat(lineLength).gray)
+}
