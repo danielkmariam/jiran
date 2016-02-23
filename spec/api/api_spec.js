@@ -80,34 +80,32 @@ describe('Jira Api', function () {
             key: 'KEY_1',
             fields: {
               status: {name: 'In Progress'},
-              summary: 'Test issue 1',
-              project: {key: 'PROJECT_KEY_1'}  
+              summary: 'Test issue 1' 
             }
           },
           {
             key: 'KEY_2',
             fields: {
               status: {name: 'Open'},
-              summary: 'Test issue 2',
-              project: {key:' PROJECT_KEY_2'}
+              summary: 'Test issue 2'
             }
           }
         ]
       }))
 
       let options = {
+        'asignee': true,
         'open': false,
         'in_progress': false,
         'under_review': false,
         'resolved': false
       }
-      return JiraApi.getIssues(options)
+      return JiraApi.getIssues('PROJECT_KEY', options)
         .then((issues) => {
           expect(issues.length).to.be.equal(2)
           expect(issues[0].key).to.be.equal('KEY_1')
           expect(issues[0].status).to.be.equal('In Progress')
           expect(issues[0].summary).to.be.equal('Test issue 1')
-          expect(issues[0].projectKey).to.be.equal('PROJECT_KEY_1')
         })
     })
 
@@ -117,7 +115,7 @@ describe('Jira Api', function () {
         issues: []
       }))
 
-      return JiraApi.getIssues({project: 'PROJECT_KEY_1'})
+      return JiraApi.getIssues('PROJECT_KEY_1', {'asignee': true})
         .catch((error) => {
           expect(error.toString()).to.be.equal('Error: There are no issues for current user')
         })

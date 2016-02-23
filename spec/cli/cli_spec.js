@@ -63,14 +63,12 @@ describe('Jira Cli', function () {
         {
           key: 'KEY_1',
           status: 'In Progress',
-          summary: 'Test issue 1',
-          projectKey: 'PROJECT_KEY_1'
+          summary: 'Test issue 1'
         },
         {
           key: 'KEY_2',
           status: 'Open',
-          summary: 'Test issue 2',
-          projectKey: 'PROJECT_KEY_2'
+          summary: 'Test issue 2'
         }
       ]))
 
@@ -79,10 +77,10 @@ describe('Jira Cli', function () {
       return JiraCli.renderIssues()
         .then(() => {
           assert(JiraCli.tableRenderer.render.calledWith(
-            ['Issue key', 'Status', 'Summary', 'Project key'],
+            ['Issue key', 'Status', 'Summary'],
             [ 
-              [ 'KEY_1', 'In Progress', 'Test issue 1', 'PROJECT_KEY_1' ],
-              [ 'KEY_2', 'Open', 'Test issue 2', 'PROJECT_KEY_2' ]
+              [ 'KEY_1', 'In Progress', 'Test issue 1' ],
+              [ 'KEY_2', 'Open', 'Test issue 2' ]
             ]
           ))
         })

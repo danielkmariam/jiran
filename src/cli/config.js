@@ -42,6 +42,21 @@ class Config {
 
     this.save(configData)
   }
+
+  saveDailyHours (dailyHours) {
+    let configData = this.detail()
+    configData.daily_hours = dailyHours
+
+    this.save(configData)
+  }
+
+  saveMaxResults (maxResults) {
+    let configData = this.detail()
+    configData.max_results = maxResults
+
+    this.save(configData)
+  }
+
 }
 
 module.exports = Config

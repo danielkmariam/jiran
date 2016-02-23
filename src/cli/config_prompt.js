@@ -1,5 +1,6 @@
 const prompt = require('prompt')
-const DAILY_HOURS = '7.5h'
+const DAILY_HOURS = '7.5'
+const MAX_RESULTS = 20
 
 class ConfigPrompt {
   constructor (Config) {
@@ -38,6 +39,10 @@ class ConfigPrompt {
         daily_hours: {
           description: 'Default daily hours [optional]:'.green,
           default: DAILY_HOURS
+        },
+        max_results: {
+          description: 'Maximum query result [optional]:'.green,
+          default: MAX_RESULTS
         }
       }
     }
@@ -74,6 +79,7 @@ class ConfigPrompt {
     schema.properties.apiVersion.default = data.apiVersion
     schema.properties.project.default = data.project
     schema.properties.daily_hours.default = data.daily_hours || DAILY_HOURS
+    schema.properties.max_results.default = data.max_results || MAX_RESULTS
 
     prompt.get(schema, (err, configData, callback) => {
       if (err) callback(false)

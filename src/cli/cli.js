@@ -29,14 +29,14 @@ class Cli {
       })
   }
 
-  renderIssues (options) {
+  renderIssues (project, options) {
     return this.api
-      .getIssues(options)
+      .getIssues(project, options)
       .then((issues) => {
         this.tableRenderer.render(
-          ['Issue key', 'Status', 'Summary', 'Project key'],
+          ['Issue key', 'Status', 'Summary'],
           issues.map((issue) => {
-            return [issue.key, issue.status, issue.summary, issue.projectKey]
+            return [issue.key, issue.status, issue.summary]
           })
         )
       })
@@ -119,7 +119,7 @@ class Cli {
   }
 
   renderDashboard (weekAgo, config) {
-    const DAY_WORK_HOUR = config.daily_hours || '7.5h'
+    const DAY_WORK_HOUR = config.daily_hours || 7.5
     const fromDate = this.dateHelper.getStartOf(weekAgo)
     const toDate = this.dateHelper.getEndOf(weekAgo)
     const days = this.dateHelper.getWeekDaysFor(weekAgo)
@@ -129,7 +129,9 @@ class Cli {
     const defaultworklogs = Array(days.length).fill('')
     const columns = ['Issue'].concat(days)
     const totals = ['Total'.green].concat(defaultworklogs)
+
     let issueKeyLength = 0
+    let dailyHoursInSeconds = DAY_WORK_HOUR * 3600
 
     return this.api
       .getWorklogs(fromDate, toDate, config.username)
@@ -153,13 +155,13 @@ class Cli {
 
         if (rows.length > 0) {
           rows.push(innerTotalLines(days, issueKeyLength))
-          rows.push(changeTotalTimeSpentToHours(totals, DAY_WORK_HOUR))
+          rows.push(changeTotalTimeSpentToHours(totals, dailyHoursInSeconds))
 
-          this.logger.log(`Time logged for week staring on ${formattedFromDate} to ${formattedToDate}`)
+          this.logger.log(`Time logged for week staring ${formattedFromDate} to ${formattedToDate}`)
           this.tableRenderer.render(columns, rows)
-          this.logger.log(`Total daily hours is ${DAY_WORK_HOUR}\n`)
+          this.logger.log(`Total daily hours is ${DAY_WORK_HOUR}hrs\n`)
         } else {
-          this.logger.warn('No time logged for this week')
+          this.logger.warn(`No time logged yet for week staring ${formattedFromDate} to ${formattedToDate}`)
         }
       })
       .catch((error) => {
@@ -172,18 +174,18 @@ module.exports = Cli
 
 const changeTimeSpentToHours = (timeSpentSeconds) => {
   return timeSpentSeconds.map((timeSpent, key) => {
-    return (key === 0 || timeSpent === '') ? timeSpent : (timeSpent / 3600).toFixed(1) + 'h'
+    return (key === 0 || timeSpent === '') ? timeSpent : (timeSpent / 3600).toFixed(2) + 'h'
   })
 }
 
-const changeTotalTimeSpentToHours = (timeSpentSeconds, dailyHour) => {
+const changeTotalTimeSpentToHours = (timeSpentSeconds, dailyHoursInSeconds) => {
   return timeSpentSeconds.map((timeSpent, key) => {
     if (key === 0 || timeSpent === '') {
       return timeSpent
     }
 
-    const timeSpentInHour = (timeSpent / 3600).toFixed(1) + 'h'
-    return (timeSpentInHour !== dailyHour) ? timeSpentInHour.red : timeSpentInHour.green
+    const timeSpentInHour = (timeSpent / 3600).toFixed(2) + 'h'
+    return (timeSpent < dailyHoursInSeconds) ? timeSpentInHour.red : timeSpentInHour.green
   })
 }
 

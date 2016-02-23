@@ -13,6 +13,7 @@ class Client {
     this.protocol = Config.protocol
     this.host = Config.host
     this.port = Config.port === '80' ? '' : Config.port
+    this.maxResult = Config.max_results
     this.options = {
       auth: {
         'user': this.username,

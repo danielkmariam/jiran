@@ -30,9 +30,9 @@ class Api {
       })
   }
 
-  getIssues (options) {
+  getIssues (project, options) {
     return this.client
-      .get('/search?jql=' + this.jql.getQuery(options))
+      .get(`/search?jql=${this.jql.getQuery(project, options)}&maxResults=${this.client.maxResult}`)
       .then((response) => {
         if (response.total === 0) {
           throw new Error('There are no issues for current user')
@@ -43,8 +43,7 @@ class Api {
           issues.push({
             'key': issue.key,
             'status': issue.fields.status.name,
-            'summary': issue.fields.summary,
-            'projectKey': issue.fields.project.key
+            'summary': issue.fields.summary
           })
         })
         return issues
