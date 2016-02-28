@@ -11,6 +11,17 @@ class Api {
     return new Api(Client, Jql)
   }
 
+  getProjects (recent) {
+    return this.client
+      .get(`/project/?recent=${recent}`)
+      .then((projects) => {
+        return projects
+      })
+      .catch((error) => {
+        throw new Error(error.message)
+      })
+  }
+
   getIssue (key) {
     return this.client
       .get('/issue/' + key)

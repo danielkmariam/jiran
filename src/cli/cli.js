@@ -11,9 +11,25 @@ class Cli {
     return new Cli(JiraApi, TableRenderer, Logger, DateHelper)
   }
 
+  renderProjects (recent) {
+    return this.api
+      .getProjects(recent)
+      .then((projects) => {
+        this.tableRenderer.render(
+          ['Project key', 'Short Description'],
+          projects.map((project) => {
+            return [project.key, project.name]
+          })
+        )
+      })
+      .catch((error) => {
+        this.logger.error(error.toString())
+      })
+  }
+
   renderIssue (issue) {
     return this.api
-      .getIssue((issue))
+      .getIssue(issue)
       .then((issue) => {
         this.tableRenderer.renderTitle('Issue detail summary')
         this.tableRenderer.renderVertical([
