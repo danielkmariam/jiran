@@ -39,7 +39,7 @@ class Client {
     return new Promise((resolve, reject) => {
       request.get(options, (error, response) => {
         if (error || response.statusCode !== 200) {
-          reject(new Error(response.statusCode + ' - ' + response.body.errorMessages[0]))
+          reject(new Error(`${response.statusCode} - ${getErroMessage(response)}`))
         } else {
           resolve(response.body)
         }
@@ -70,8 +70,8 @@ class Client {
 
     return new Promise((resolve, reject) => {
       request.post(options, (error, response) => {
-        if (error || response.statusCode.toString().split('')[0] !== '2') {
-          reject(new Error('Error:  post failed'))
+        if (error || response.statusCode !== 201) {
+          reject(new Error(`${response.statusCode} - ${getErroMessage(response)}`))
         } else {
           resolve(response.body)
         }
@@ -97,5 +97,16 @@ const hasValidConfig = (Config) => {
 const buildUrl = (domainData, pathname, apiVersion, basePath = 'rest/api/') => {
   domainData.pathname = basePath + apiVersion + pathname
   return decodeURIComponent(url.format(domainData))
+}
+
+const getErroMessage = (response) => {
+  if (response.body.errorMessages) {
+    return response.body.errorMessages[0]
+  }
+
+  if (response.statusMessage) {
+    return response.statusMessage
+  }
+  return ''
 }
 

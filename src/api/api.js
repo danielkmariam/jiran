@@ -182,6 +182,6 @@ module.exports = Api
 const isAssigneeTimeLog = (worklog, assignee) => {
   return worklog.author.name === assignee
 }
-const dateLoggedIsInRange  = (fromDate, toDate, started) => {
+const dateLoggedIsInRange = (fromDate, toDate, started) => {
   return started >= fromDate && started < toDate
 }
