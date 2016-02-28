@@ -119,7 +119,7 @@ class Cli {
   }
 
   renderDashboard (weekAgo, config) {
-    const DAY_WORK_HOUR = config.daily_hours || 7.5
+    const DAILY_HOURS = config.daily_hours || 7.5
     const fromDate = this.dateHelper.getStartOf(weekAgo)
     const toDate = this.dateHelper.getEndOf(weekAgo)
     const days = this.dateHelper.getWeekDaysFor(weekAgo)
@@ -131,7 +131,7 @@ class Cli {
     const totals = ['Total'.green].concat(defaultworklogs)
 
     let issueKeyLength = 0
-    let dailyHoursInSeconds = DAY_WORK_HOUR * 3600
+    let dailyHoursInSeconds = DAILY_HOURS * 3600
 
     return this.api
       .getWorklogs(fromDate, toDate, config.username)
@@ -140,7 +140,7 @@ class Cli {
         worklogs.map((issueWorklogs) => {
           let timeLoggedInSeconds = [issueWorklogs.key].concat(defaultworklogs)
           issueWorklogs.worklogs.map((worklog) => {
-            let index = columns.indexOf(worklog.started.split('T')[0])
+            let index = columns.indexOf(worklog.started)
             let prevTimeLog = timeLoggedInSeconds[index] ? timeLoggedInSeconds[index] : 0
             let prevTotalTime = totals[index] ? totals[index] : 0
 
@@ -159,7 +159,7 @@ class Cli {
 
           this.logger.log(`Time logged for week staring ${formattedFromDate} to ${formattedToDate}`)
           this.tableRenderer.render(columns, rows)
-          this.logger.log(`Total daily hours is ${DAY_WORK_HOUR}hrs\n`)
+          this.logger.log(`Total daily hours is ${DAILY_HOURS}hrs\n`)
         } else {
           this.logger.warn(`No time logged yet for week staring ${formattedFromDate} to ${formattedToDate}`)
         }

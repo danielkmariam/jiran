@@ -160,12 +160,12 @@ class Api {
             .then((response) => {
               for (let worklog of response.worklogs) {
                 let started = worklog.started.split('T')[0]
-                if (worklog.author.name === assignee &&
-                  started >= fromDate && started < toDate) {
+                if (isAssigneeTimeLog(worklog, assignee) && dateLoggedIsInRange(fromDate, toDate, started)) {
                   issues.worklogs.push({
+                    'key': issue.key,
                     'timeSpent': worklog.timeSpent,
                     'timeSpentSeconds': worklog.timeSpentSeconds,
-                    'started': worklog.started
+                    'started': started
                   })
                 }
               }
@@ -178,3 +178,10 @@ class Api {
 }
 
 module.exports = Api
+
+const isAssigneeTimeLog = (worklog, assignee) => {
+  return worklog.author.name === assignee
+}
+const dateLoggedIsInRange  = (fromDate, toDate, started) => {
+  return started >= fromDate && started < toDate
+}
