@@ -108,50 +108,44 @@ class Api {
     }
 
     return this.client
-      .post('/issue/' + key + '/worklog', data)
-      .then((response) => {
-        return response
-      })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .post(`/issue/${key}/worklog`, data)
+      .then(response => response)
+      .catch(error => { throw new Error(error.message) })
   }
 
   transitionIssue (key, toStatus) {
     return this.getTransitionByName(key, toStatus)
-      .then((transition) => {
-        if (!transition && !transition[0].id) {
-          throw new Error('\'' + toStatus + '\' transition is not avilable for issue ' + key)
+      .then(transition => {
+        if (transition.length === 0 || !transition[0].id) {
+          throw new Error(`Either the issue is already on '${toStatus}' or the transition is not avilable for issue ${key}`)
         }
-        return this.transition('/issue/' + key + '/transitions', transition[0].id)
+        return this.transition(key, transition[0].id)
       })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .catch(error => { throw new Error(error.message) })
+  }
+
+  getTransitions (key) {
+    return this.client
+      .get(`/issue/${key}/transitions`)
+      .then(transitions => transitions)
+      .catch(error => { throw new Error(error.message) })
   }
 
   getTransitionByName (key, name) {
-    return this.client
-      .get('/issue/' + key + '/transitions')
-      .then((response) => {
-        return response.transitions.filter((transition) => {
+    return this.getTransitions(key)
+      .then(transitions => {
+        return transitions.transitions.filter(transition => {
           return transition.to.name.toLowerCase().search(name) !== -1
         })
       })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .catch(error => { throw new Error(error.message) })
   }
 
-  transition (url, transitionId) {
+  transition (key, transitionId) {
     return this.client
-      .post(url, {'transition': {'id': transitionId}})
-      .then((response) => {
-        return response
-      })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .post(`/issue/${key}/transitions`, { 'transition': {'id': transitionId} })
+      .then(response => response)
+      .catch(error => { throw new Error(error.message) })
   }
 
   getWorklogs (fromDate, toDate, assignee) {
@@ -193,6 +187,8 @@ module.exports = Api
 const isAssigneeTimeLog = (worklog, assignee) => {
   return worklog.author.name === assignee
 }
+
 const dateLoggedIsInRange = (fromDate, toDate, started) => {
   return started >= fromDate && started < toDate
 }
+

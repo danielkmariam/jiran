@@ -70,7 +70,7 @@ class Client {
 
     return new Promise((resolve, reject) => {
       request.post(options, (error, response) => {
-        if (error || response.statusCode !== 201) {
+        if (error || [201, 204].indexOf(response.statusCode) < 0) {
           reject(new Error(`${response.statusCode} - ${getErroMessage(response)}`))
         } else {
           resolve(response.body)
@@ -100,7 +100,7 @@ const buildUrl = (domainData, pathname, apiVersion, basePath = 'rest/api/') => {
 }
 
 const getErroMessage = (response) => {
-  if (response.body.errorMessages) {
+  if (response.body && response.body.errorMessages) {
     return response.body.errorMessages[0]
   }
 
