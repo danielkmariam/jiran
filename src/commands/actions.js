@@ -62,13 +62,13 @@ program
 
 program
   .command('projects')
-  .description('View recent projects of current user')
+  .description('View recent projects for current user')
   .option('-r, --recent [int]', 'Number of recent projects to view, default is set to 5', RECENT_PROJECTS)
   .action(options => JiraCli.renderProjects(options.recent))
 
 program
   .command('issues [project]')
-  .description(`List top priority issues of a project, number of issues returned dependes on the configured value of max results e.g. ${currentConfig.max_results || MAX_RESULTS}`)
+  .description(`List top priority issues of a project, number of issues returned depends on the configured value of max results e.g. ${currentConfig.max_results || MAX_RESULTS}`)
   .option('-a, --assignee', 'display current user issues on this project', false)
   .option('-o, --open', 'include open issues', false)
   .option('-i, --in_progress', 'include in-progress issues', false)

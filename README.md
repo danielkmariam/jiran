@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-    node >= 4.0.1
+    node >= 0.12.0
 
 ## Install
 To install it globally and access it from any where on your system, run this command
@@ -16,7 +16,8 @@ To install it globally and access it from any where on your system, run this com
     Commands:
 
       config [options]                         Create account configuration
-      issues [options]                         List current user issues
+      projects [options]                       View recent projects for current user
+      issues [options] [project]               List top priority issues of a project, number of issues returned depends on the configured value of max results e.g. 20
       view <issue>                             View issue information
       pick <issue>                             Start working on an issue
       comment <issue> <comment>                Add comment to an issue
@@ -37,39 +38,52 @@ To install it globally and access it from any where on your system, run this com
   
   **Configuration**
 
-  The first task that needs to be perofrmed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jira/config.json` file accessable only to the current user will be created.
+  The first task that needs to be performed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jira/config.json` file accessible only to the current user will be created.
 
-  To save jira information to config file
+  To save Jira information to config file
 
     $ jiran config
 
   To view what is saved in config file
-  
+
     $ jiran config -v
+
+  To saved default project
+
+    $ jiran config -p <project key>
 
   **Using other commands**
 
-   List all issues for the current user
-    
-    $ jiran issues 
-    
+  List recent projects for current user
+
+    $ jiran projects
+
+   List top issues for a default project. Default project is configured using `$ jiran config -p <project key>`
+
+    $ jiran issues
+
+   List top issues for a given project key
+
+     $ jiran issues <project key>
+
    Transition a task to in progress
-    
+
     $ jiran pick <issue key>
-   
+
    Log time to a task
-    
-    $ jiran log-time <ABC-12> '<1h 30m>'  -c '[comment goes here]' -d '[YYYY-MM-DD]'
+
+    $ jiran log-time <issue key> '<1h 30m>'  -c '[comment goes here]' -d '[YYYY-MM-DD]'
 
    Time spent for a week defaults to the current week. The value of week is a single number [1, 2, ...] to which how many weeks to go back and see the time logged for that week.
 
 Time logged for current week
-  
-    $ jiran dashboard 
+
+    $ jiran dashboard
 
 Time logged for last week
   
-    $ jiran dashboard 1 
+    $ jiran dashboard 1
 
 ## License
+
 [MIT](https://github.com/danielkmariam/jiran/blob/master/LICENSE)
