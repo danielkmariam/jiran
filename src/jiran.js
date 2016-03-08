@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 
 const Config = require('./cli/config').createConfigWith('config.json')
 
