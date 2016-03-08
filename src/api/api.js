@@ -14,18 +14,14 @@ class Api {
   getProjects (recent) {
     return this.client
       .get(`/project/?recent=${recent}`)
-      .then((projects) => {
-        return projects
-      })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .then(projects => projects)
+      .catch(error => { throw new Error(error.message) })
   }
 
   getIssue (key) {
     return this.client
-      .get('/issue/' + key)
-      .then((issue) => {
+      .get(`/issue/${key}`)
+      .then(issue => {
         const fields = issue.fields
         return {
           'key': issue.key,
@@ -36,21 +32,19 @@ class Api {
           'projetcKey': fields.project.key
         }
       })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .catch(error => { throw new Error(error.message) })
   }
 
   getIssues (project, options) {
     return this.client
       .get(`/search?jql=${this.jql.getQuery(project, options)}&maxResults=${this.client.maxResult}`)
-      .then((response) => {
+      .then(response => {
         if (response.total === 0) {
           throw new Error('There are no issues for current user')
         }
 
         let issues = []
-        response.issues.map((issue) => {
+        response.issues.map(issue => {
           issues.push({
             'key': issue.key,
             'status': issue.fields.status.name,
@@ -59,19 +53,17 @@ class Api {
         })
         return issues
       })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .catch(error => { throw new Error(error.message) })
   }
 
   getIssueWorklogs (key) {
     return this.client
-      .get('/issue/' + key + '/worklog')
-      .then((response) => {
+      .get(`/issue/${key}/worklog`)
+      .then(response => {
         if (response.total === 0) {
           throw new Error('There are no worklogs for this issue')
         }
-        return response.worklogs.map((worklog) => {
+        return response.worklogs.map(worklog => {
           return {
             'id': worklog.id,
             'timeSpent': worklog.timeSpent,
@@ -84,20 +76,14 @@ class Api {
           }
         })
       })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .catch(error => { throw new Error(error.message) })
   }
 
   addComment (key, comment) {
     return this.client
-      .post('/issue/' + key + '/comment', {'body': comment})
-      .then((response) => {
-        return response
-      })
-      .catch((error) => {
-        throw new Error(error.message)
-      })
+      .post(`/issue/${key}/comment`, {'body': comment})
+      .then(response => response)
+      .catch(error => { throw new Error(error.message) })
   }
 
   addWorklog (key, timeSpent, comment, started) {
@@ -149,19 +135,19 @@ class Api {
   }
 
   getWorklogs (fromDate, toDate, assignee) {
-    let jql = 'worklogAuthor=' + assignee + '+AND+worklogDate>=' + fromDate + '+AND+worklogDate<=' + toDate
+    let jql = `worklogAuthor=${assignee} AND worklogDate>=${fromDate} AND worklogDate<=${toDate}`
 
     return this.client
-      .get('/search?jql=' + jql)
+      .get(`/search?jql=${jql}`)
       .then((issuesWithworklogs) => {
-        const promises = issuesWithworklogs.issues.map((issue) => {
+        const promises = issuesWithworklogs.issues.map(issue => {
           let issues = {
             key: issue.key,
             worklogs: []
           }
 
           return this.client
-            .get('/issue/' + issue.key + '/worklog')
+            .get(`/issue/${issue.key}/worklog`)
             .then((response) => {
               for (let worklog of response.worklogs) {
                 let started = worklog.started.split('T')[0]
@@ -191,4 +177,3 @@ const isAssigneeTimeLog = (worklog, assignee) => {
 const dateLoggedIsInRange = (fromDate, toDate, started) => {
   return started >= fromDate && started < toDate
 }
-

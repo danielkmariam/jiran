@@ -26,7 +26,7 @@ program
   .option('-p, --project <key>', 'save default project to config'. String)
   .option('-m, --max_results <key>', 'save maximum number of results for issue query'. String)
   .option('-r, --rm_project', 'remove default project form config', false)
-  .action((options) => {
+  .action(options => {
     if (options.view) {
       TableRenderer.renderTitle('Current configuration detail')
       TableRenderer.renderVertical([
@@ -64,9 +64,7 @@ program
   .command('projects')
   .description('View recent projects of current user')
   .option('-r, --recent [int]', 'Number of recent projects to view, default is set to 5', RECENT_PROJECTS)
-  .action((options) => {
-    JiraCli.renderProjects(options.recent)
-  })
+  .action(options => JiraCli.renderProjects(options.recent))
 
 program
   .command('issues [project]')
@@ -80,7 +78,7 @@ program
     let projectKey = project || currentConfig.project
 
     if (!projectKey) {
-      Logger.warn(`To use this command with out project key, please set default project first '$ jiran config -p <ABC>'`)
+      Logger.warn(`Project key is required or default project needs to be set first '$ jiran config -p <ABC>'`)
       process.exit(1)
     }
 
@@ -94,14 +92,12 @@ program
 program
   .command('view <issue>')
   .description('View issue information')
-  .action((issue) => {
-    JiraCli.renderIssue(issue)
-  })
+  .action(issue => JiraCli.renderIssue(issue))
 
 program
   .command('pick <issue>')
   .description('Start working on an issue')
-  .action((issue) => {
+  .action(issue => {
     if (issue) {
       JiraCli.transitionIssue(issue, 'in progress')
     }
@@ -110,9 +106,7 @@ program
 program
   .command('comment <issue> <comment>')
   .description('Add comment to an issue')
-  .action((issue, comment) => {
-    JiraCli.addComment(issue, comment)
-  })
+  .action((issue, comment) => JiraCli.addComment(issue, comment))
 
 program
   .command('log-time <issue> <time_spent>')
@@ -126,7 +120,7 @@ program
 program
   .command('review <issue>')
   .description('Move an issue for dev to review')
-  .action((issue) => {
+  .action(issue => {
     if (issue) {
       JiraCli.transitionIssue(issue, 'under review')
     }
@@ -135,7 +129,7 @@ program
 program
   .command('qa <issue>')
   .description('Move an issue for QA to check')
-  .action((issue) => {
+  .action(issue => {
     if (issue) {
       JiraCli.transitionIssue(issue, 'qa')
     }
@@ -144,7 +138,7 @@ program
 program
   .command('close <issue>')
   .description('Close an issue')
-  .action((issue) => {
+  .action(issue => {
     if (issue) {
       JiraCli.transitionIssue(issue, 'close')
     }
@@ -153,7 +147,7 @@ program
 program
   .command('open <issue>')
   .description('Reopen an issue')
-  .action((issue) => {
+  .action(issue => {
     if (issue) {
       JiraCli.transitionIssue(issue, 'open')
     }
@@ -162,16 +156,12 @@ program
 program
   .command('worklogs <issue>')
   .description('List worklogs for an issue')
-  .action((issue) => {
-    JiraCli.renderIssueWorklogs(issue)
-  })
+  .action(issue => JiraCli.renderIssueWorklogs(issue))
 
 program
   .command('dashboard [week]')
   .description('View time spent on a week. Week is a single number [1, 2, 3, ...] to which how many weeks to go back')
-  .action((week) => {
-    JiraCli.renderDashboard(week, currentConfig)
-  })
+  .action(week => JiraCli.renderDashboard(week, currentConfig))
 
 program.parse(process.argv)
 

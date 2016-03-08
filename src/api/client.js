@@ -1,5 +1,7 @@
 const url = require('url')
 const request = require('request')
+const MAX_RESULTS = 20
+const PORT = 80
 
 class Client {
   constructor (Config) {
@@ -12,8 +14,8 @@ class Client {
     this.apiVersion = Config.apiVersion
     this.protocol = Config.protocol
     this.host = Config.host
-    this.port = Config.port === '80' ? '' : Config.port
-    this.maxResult = Config.max_results
+    this.port = Config.port === PORT ? '' : Config.port
+    this.maxResult = Config.max_results || MAX_RESULTS
     this.options = {
       auth: {
         'user': this.username,
@@ -109,4 +111,3 @@ const getErroMessage = (response) => {
   }
   return ''
 }
-
