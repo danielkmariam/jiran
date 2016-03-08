@@ -24,7 +24,7 @@ program
   .option('-v, --view', 'view saved jira configuration', false)
   .option('-d, --daily_hours <hours>', 'save daily hours to config, e.g. 7.5h', String)
   .option('-p, --project <key>', 'save default project to config'. String)
-  .option('-m, --max_results <key>', 'save maximum number of results for issue query'. String)
+  .option('-m, --max_results <key>', 'save maximum number of issues returned for issue query'. String)
   .option('-r, --rm_project', 'remove default project form config', false)
   .action(options => {
     if (options.view) {
@@ -68,7 +68,7 @@ program
 
 program
   .command('issues [project]')
-  .description(`List top priority issues of a project. Issues displayed is limitted to maximum results configured e.g. ${currentConfig.max_results || MAX_RESULTS}`)
+  .description(`List top priority issues of a project, number of issues returned dependes on the configured value of max results e.g. ${currentConfig.max_results || MAX_RESULTS}`)
   .option('-a, --assignee', 'display current user issues on this project', false)
   .option('-o, --open', 'include open issues', false)
   .option('-i, --in_progress', 'include in-progress issues', false)
