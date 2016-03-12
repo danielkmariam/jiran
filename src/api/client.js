@@ -1,7 +1,7 @@
 const url = require('url')
 const request = require('request')
 const MAX_RESULTS = 20
-const PORT = 80
+const PORT = '80'
 
 class Client {
   constructor (Config) {
@@ -40,7 +40,9 @@ class Client {
 
     return new Promise((resolve, reject) => {
       request.get(options, (error, response) => {
-        if (error || response.statusCode !== 200) {
+        if (error) {
+          reject(new Error(error.message))
+        } else if (response && response.statusCode !== 200) {
           reject(new Error(`${response.statusCode} - ${getErroMessage(response)}`))
         } else {
           resolve(response.body)
