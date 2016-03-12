@@ -1,4 +1,5 @@
 const moment = require('moment')
+require('moment-range');
 
 class DateHelper {
   getMoment (value) {
@@ -27,6 +28,18 @@ class DateHelper {
       datesInRange.push(currentDate.isoWeekday(i).format('YYYY-MM-DD'))
     }
     return datesInRange
+  }
+
+  getStartEndMomentFromString (dateRange) {
+    return dateRange.split(' ').map(date => moment(date, 'YYYY-MM-DD'))
+  }
+
+  getWeekDaysFromDateRange (dateRange) {
+    let saturday = 6
+    return moment.range(this.getStartEndMomentFromString(dateRange))
+      .toArray('days')
+      .filter(date => moment(date).isoWeekday() < saturday)
+      .map(date => this.getWorklogDate(date))
   }
 
   getDateFor (weekAgo) {

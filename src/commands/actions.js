@@ -111,10 +111,15 @@ program
 program
   .command('log-time <issue> <time_spent>')
   .description('Log time to an issue')
-  .option('-c, --comment [value]', 'comment'. String)
-  .option('-d, --date [value]', 'the date worklog will be added in \'YYYY-MM-DD\' format e.g. 2016-01-31', String)
+  .option('-c, --comment [comment]', 'comment'. String)
+  .option('-d, --date [date]', 'the date worklog will be added in \'YYYY-MM-DD\' format e.g. 2016-01-31', String)
+  .option('-r, --date_range [range]', 'the date range separated by space e.g  `2016-01-31 2016-02-04`', String)
   .action((issue, time_spent, options) => {
-    JiraCli.addWorklog(issue, time_spent, options.comment, options.date)
+    if (options.date_range) {
+      JiraCli.addWorklogs(issue, time_spent, options.comment, options.date_range)
+    } else {
+      JiraCli.addWorklog(issue, time_spent, options.comment, options.date)
+    }
   })
 
 program

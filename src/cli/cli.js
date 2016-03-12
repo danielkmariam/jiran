@@ -82,14 +82,24 @@ class Cli {
   }
 
   addWorklog (issue, timeSpent, comment, started) {
-    let dateStarted = this.dateHelper.getWorklogDate(started)
-
     return this.api
-      .addWorklog(issue, timeSpent, comment, dateStarted)
+      .addWorklog(issue, timeSpent, comment, this.dateHelper.getWorklogDate(started))
       .then(response => {
-        this.logger.success('Worklog ' + timeSpent + ' added to issue ' + issue)
+        this.logger.success(`${timeSpent} logged to issue ${issue} for ${started}`)
       })
       .catch(error => { this.logger.error(error.toString()) })
+  }
+
+  addWorklogs (issue, timeSpent, comment, dateRange) {
+    Promise.all(
+      this.dateHelper.getWeekDaysFromDateRange(date_range).map(started => {
+        return this.api.addWorklog(issue, timeSpent, comment, started)
+      })
+    )
+    .then(response => {
+      this.logger.success(`${timeSpent} logged to issue ${issue} for all work days in ${date_range}`)
+    })
+    .catch(error => { this.logger.error(error.toString()) })
   }
 
   renderIssueWorklogs (issue) {
