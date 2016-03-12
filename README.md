@@ -70,9 +70,17 @@ To install it globally and access it from any where on your system, run this com
 
     $ jiran pick <issue key>
 
-   Log time to a task
+   Log time for a task on the current date
 
-    $ jiran log-time <issue key> '<1h 30m>'  -c '[comment goes here]' -d '[YYYY-MM-DD]'
+    $ jiran log-time <issue key> '<1h 30m>'  -c '[comment text]'
+
+  Log time for a task on a specific date
+
+     $ jiran log-time <issue key> '<1h 30m>'  -c '[comment text]' -d '[YYYY-MM-DD]'
+
+  Log time for a task on date range
+
+     $ jiran log-time <issue key> '<1h 30m>'  -c '[comment text]' -r '[YYYY-MM-DD YYYY-MM-DD]'
 
    Time spent for a week defaults to the current week. The value of week is a single number [1, 2, ...] to which how many weeks to go back and see the time logged for that week.
 
