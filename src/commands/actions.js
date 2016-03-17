@@ -16,7 +16,7 @@ const MAX_RESULTS = 20
 const RECENT_PROJECTS = 5
 
 program
-  .version('1.0.0')
+  .version('1.1.3')
 
 program
   .command('config')
