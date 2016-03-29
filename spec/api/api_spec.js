@@ -33,7 +33,7 @@ describe('Jira Api', function () {
     expect(JiraApi.client.username).to.be.equal(ConfigData.username)
   })
 
-  describe('Issue', function () {  
+  describe('Issue', function () {
     it('It should return issue detail', function() {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({
         key: 'some key',
@@ -80,7 +80,7 @@ describe('Jira Api', function () {
             key: 'KEY_1',
             fields: {
               status: {name: 'In Progress'},
-              summary: 'Test issue 1' 
+              summary: 'Test issue 1'
             }
           },
           {
@@ -130,7 +130,10 @@ describe('Jira Api', function () {
           id: '12345',
           timeSpent: '1h 30m',
           comment: 'worklog comment',
-          author: {displayName: 'logger name'},
+          author: {
+            displayName: 'logger name',
+            name: ConfigData.username
+          },
           created: '12/12/2015'
         }]
       }))

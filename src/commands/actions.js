@@ -123,6 +123,24 @@ program
   })
 
 program
+  .command('worklogs <issue>')
+  .description('View work logs for an issue')
+  .action(issue => JiraCli.renderIssueWorklogs(issue))
+
+program
+  .command('update-worklog <issue> <worklog>')
+  .description('Update an existing worklog entry')
+  .option('-t, --time_spent [time]', 'time spent', String)
+  .option('-c, --comment [comment]', 'comment', String)
+  .option('-d, --date [date]', 'date worklog in \'YYYY-MM-DD\' format e.g. 2016-01-31', String)
+  .action((issue, worklog) => JiraCli.updateWorklog(issue, worklog))
+
+program
+  .command('delete-worklog <issue> <worklog>')
+  .description('Delete an existing worklog entry')
+  .action((issue, worklog) => JiraCli.deleteWorklog(issue, worklog))
+
+program
   .command('review <issue>')
   .description('Move an issue for dev to review')
   .action(issue => {

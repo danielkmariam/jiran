@@ -1,3 +1,6 @@
+const MAX_WORKLOG_RESULT = 10
+const MAX_COMMENT_LENGTH = 50
+
 class Api {
   constructor (Client, Jql) {
     if (!Client) {
@@ -63,18 +66,25 @@ class Api {
         if (response.total === 0) {
           throw new Error('There are no worklogs for this issue')
         }
-        return response.worklogs.map(worklog => {
-          return {
-            'id': worklog.id,
-            'timeSpent': worklog.timeSpent,
-            'timeSpentSeconds': worklog.timeSpentSeconds,
-            'comment': worklog.comment.replace(/\r?\n|\r/g, ''),
-            'authorName': worklog.author.name,
-            'author': worklog.author.displayName,
-            'created': worklog.created,
-            'started': worklog.started
-          }
-        })
+        return response.worklogs
+          .filter(worklog => worklog.author.name === this.client.username)
+          .sort((worklogA, worklogB) => {
+            return +(worklogA.id < worklogB.id) || +(worklogA.id === worklogB.id) - 1
+          })
+          .slice(0, MAX_WORKLOG_RESULT)
+          .map(worklog => {
+            let comment = worklog.comment ? worklog.comment : ''
+            return {
+              'id': worklog.id,
+              'timeSpent': worklog.timeSpent,
+              'timeSpentSeconds': worklog.timeSpentSeconds,
+              'comment': comment.length > MAX_COMMENT_LENGTH ? `${comment.slice(0, MAX_COMMENT_LENGTH)}...` : comment,
+              'authorName': worklog.author.name,
+              'author': worklog.author.displayName,
+              'created': worklog.created,
+              'started': worklog.started
+            }
+          })
       })
       .catch(error => { throw new Error(error.message) })
   }

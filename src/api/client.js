@@ -59,7 +59,21 @@ class Client {
     return new Promise((resolve, reject) => {
       request.put(options, (error, response) => {
         if (error || response.statusCode !== 200) {
-          reject('Error')
+          reject(new Error(`${response.statusCode} - ${getErroMessage(response)}`))
+        } else {
+          resolve(response.body)
+        }
+      })
+    })
+  }
+
+  delete (url) {
+    const options = this.options
+    options.url = buildUrl(this.domainData, url, this.apiVersion)
+    return new Promise((resolve, reject) => {
+      request.del(options, (error, response) => {
+        if (error || response.statusCode !== 204) {
+          reject(new Error(`${response.statusCode} - ${getErroMessage(response)}`))
         } else {
           resolve(response.body)
         }

@@ -1,5 +1,5 @@
 const moment = require('moment')
-require('moment-range');
+require('moment-range')
 
 class DateHelper {
   getMoment (value) {
