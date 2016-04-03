@@ -2,10 +2,12 @@ const fs = require('fs')
 const path = require('path')
 const mkdirp = require('mkdirp')
 const userhome = require('user-home')
+const setupConfig = require('../cli/setup')
 
 class Config {
   constructor (fileName) {
-    this.configFilename = path.join(userhome, '.jira', '/', fileName)
+    this.filename = fileName
+    this.configFilename = path.join(userhome, setupConfig.getConfigDirectory(), this.filename)
   }
 
   static createConfigWith (filename) {
@@ -23,6 +25,8 @@ class Config {
   save (configData) {
     createFolder(this.configFilename)
     fs.writeFileSync(this.configFilename, JSON.stringify(configData), 'utf8')
+
+    setupConfig.switchConfig(this.filename)
   }
 
   detail () {
@@ -62,7 +66,7 @@ class Config {
 module.exports = Config
 
 const createFolder = (filepath) => {
-  mkdirp(path.dirname(filepath), '0755', (error) => {
+  mkdirp.sync(path.dirname(filepath), '0755', (error) => {
     if (error) console.error(error)
   })
 }

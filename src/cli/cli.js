@@ -1,14 +1,14 @@
-
 class Cli {
-  constructor (JiraApi, TableRenderer, Logger, DateHelper) {
+  constructor (JiraApi, TableRenderer, Logger, DateHelper, FileReader) {
     this.api = JiraApi
     this.tableRenderer = TableRenderer
     this.logger = Logger
     this.dateHelper = DateHelper
+    this.fileReader = FileReader
   }
 
-  static createCliWith (JiraApi, TableRenderer, Logger, DateHelper) {
-    return new Cli(JiraApi, TableRenderer, Logger, DateHelper)
+  static createCliWith (JiraApi, TableRenderer, Logger, DateHelper, FileReader) {
+    return new Cli(JiraApi, TableRenderer, Logger, DateHelper, FileReader)
   }
 
   renderProjects (recent) {
@@ -169,6 +169,16 @@ class Cli {
         }
       })
       .catch(error => { this.logger.error(error.message) })
+  }
+
+  renderAvailableConfigFiles (configDirectory, activeConfig) {
+    this.tableRenderer.render(
+      ['Active', 'Config File'],
+      this.fileReader.findConfigFiles(configDirectory).map(filename => {
+        let activeMarker = (activeConfig === filename) ? '  x' : ''
+        return [activeMarker, filename]
+      })
+    )
   }
 }
 

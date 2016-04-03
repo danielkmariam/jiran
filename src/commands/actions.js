@@ -1,33 +1,61 @@
 const program = require('commander')
+const setup = require('../setup')
+const setupConfig = require('../cli/setup')
+
+const Config = require('../cli/config').createConfigWith(setupConfig.getActiveConfig())
+const currentConfig = Config.detail()
 
 const TableRenderer = require('../util/table_renderer')
 const DateHelper = require('../util/date_helper')
+const FileReader = require('../util/file_reader')
 const Logger = require('../util/logger').createLoggerWith(TableRenderer)
-const Config = require('../cli/config').createConfigWith('config.json')
-const ConfigPrompt = require('../cli/config_prompt').createPromptWith(Config)
-const Jql = require('../api/jql')
-const JiraClient = require('../api/client').createClientWith(Config.detail())
-const JiraApi = require('../api/api').createApiWith(JiraClient, Jql.create())
-const JiraCli = require('../cli/cli').createCliWith(JiraApi, TableRenderer, Logger, DateHelper)
 
-const currentConfig = Config.detail()
-const DAILY_HOURS = 7.5
-const MAX_RESULTS = 20
-const RECENT_PROJECTS = 5
+const Jql = require('../api/jql')
+const JiraClient = require('../api/client').createClientWith(currentConfig)
+const JiraApi = require('../api/api').createApiWith(JiraClient, Jql.create())
+const JiraCli = require('../cli/cli').createCliWith(JiraApi, TableRenderer, Logger, DateHelper, FileReader)
+const ConfigPrompt = require('../cli/config_prompt')
 
 program
   .version('1.1.3')
 
 program
   .command('config')
-  .description('Create account configuration')
-  .option('-v, --view', 'view saved jira configuration', false)
+  .description('Manage configuration')
+  .option('-s, --switch_to [switch]', 'switch to different user configuration', String)
+  .option('-f, --filename [filename]', 'save user configuration to a given file', String)
+  .option('-l, --list [list]', 'List available config options', false)
+  .option('-v, --view', 'view current configuration', false)
+  .option('-e, --edit', 'edit current configuration', false)
   .option('-d, --daily_hours <hours>', 'save daily hours to config, e.g. 7.5h', String)
   .option('-p, --project <key>', 'save default project to config'. String)
   .option('-m, --max_results <key>', 'save maximum number of issues returned for issue query'. String)
   .option('-r, --rm_project', 'remove default project form config', false)
   .action(options => {
-    if (options.view) {
+    if (options.switch_to) {
+      if (setupConfig.configFileExists(options.switch_to)) {
+        setupConfig.switchConfig(options.switch_to)
+        Logger.success(`Configuration file is switched to '${options.switch_to}'`)
+      } else {
+        Logger.error(`Configuration file '${options.switch_to}' does not exist. You can do one of the following:
+  - View available configuration files and choose from list, '$ jiran config -l'
+  - Add the new configuration file '$ jiran config -f ${options.switch_to} answering questions'
+        `)
+      }
+    } else if (options.list) {
+      JiraCli.renderAvailableConfigFiles(
+        setupConfig.getConfigDirectory(),
+        setupConfig.getActiveConfig()
+      )
+    } else if (options.filename) {
+      const message = 'Adding new configuration'
+      TableRenderer.renderTitle(message)
+      Logger.log('─'.repeat(message.length).gray)
+
+      ConfigPrompt
+        .createPromptWith(require('../cli/config').createConfigWith(options.filename))
+        .create()
+    } else if (options.view) {
       TableRenderer.renderTitle('Current configuration detail')
       TableRenderer.renderVertical([
         {'Username': currentConfig.username},
@@ -37,8 +65,8 @@ program
         {'Port': currentConfig.port},
         {'Api version': currentConfig.apiVersion},
         {'Default project': currentConfig.project},
-        {'Default daily hours ': currentConfig.daily_hours || DAILY_HOURS},
-        {'Maximum results ': currentConfig.max_results || MAX_RESULTS}
+        {'Default daily hours ': currentConfig.daily_hours || setup.dailyHours},
+        {'Maximum results ': currentConfig.max_results || setup.maxResults}
       ])
     } else if (options.project) {
       Config.saveDefaultProject(options.project)
@@ -52,23 +80,23 @@ program
     } else if (options.max_results) {
       Config.saveMaxResults(options.max_results)
       Logger.success(`Maximum results '${options.max_results}' is saved as default`)
-    } else {
+    } else if (options.edit) {
       const message = 'You are about to edit existing configuration!'
       TableRenderer.renderTitle(message)
       Logger.log('─'.repeat(message.length).gray)
-      ConfigPrompt.edit()
+      ConfigPrompt.createPromptWith(Config).edit()
     }
   })
 
 program
   .command('projects')
   .description('View recent projects for current user')
-  .option('-r, --recent [int]', 'Number of recent projects to view, default is set to 5', RECENT_PROJECTS)
+  .option('-r, --recent [int]', 'Number of recent projects to view, default is set to 5', setup.mostRecentProjects)
   .action(options => JiraCli.renderProjects(options.recent))
 
 program
   .command('issues [project]')
-  .description(`List top priority issues of a project, number of issues returned depends on the configured value of max results e.g. ${currentConfig.max_results || MAX_RESULTS}`)
+  .description(`List top priority issues of a project, number of issues returned depends on the configured value of max results e.g. ${currentConfig.max_results || setup.maxResults}`)
   .option('-a, --assignee', 'display current user issues on this project', false)
   .option('-o, --open', 'include open issues', false)
   .option('-i, --in_progress', 'include in-progress issues', false)
@@ -111,7 +139,7 @@ program
 program
   .command('log-time <issue> <time_spent>')
   .description('Log time to an issue')
-  .option('-c, --comment [comment]', 'comment'. String)
+  .option('-c, --comment [comment]', 'comment', String)
   .option('-d, --date [date]', 'the date worklog will be added in \'YYYY-MM-DD\' format e.g. 2016-01-31', String)
   .option('-r, --date_range [range]', 'the date range in \'YYYY-MM-DD\' format separated by space e.g. `2016-01-31 2016-02-04`', String)
   .action((issue, time_spent, options) => {

@@ -15,19 +15,21 @@ To install it globally and access it from any where on your system, run this com
 
     Commands:
 
-      config [options]                         Create account configuration
-      projects [options]                       View recent projects for current user
-      issues [options] [project]               List top priority issues of a project, number of issues returned depends on the configured value of max results e.g. 20
-      view <issue>                             View issue information
-      pick <issue>                             Start working on an issue
-      comment <issue> <comment>                Add comment to an issue
-      log-time [options] <issue> <time_spent>  Log time to an issue
-      review <issue>                           Move an issue for dev to review
-      qa <issue>                               Move an issue for QA to check
-      close <issue>                            Close an issue
-      open <issue>                             Reopen an issue
-      worklogs <issue>                         List worklogs for an issue
-      dashboard [week]                         View time spent on a week. Week is a single number [1, 2, 3, ...] to which how many weeks to go back
+      config [options]                            Manage configuration
+      projects [options]                          View recent projects for current user
+      issues [options] [project]                  List top priority issues of a project, number of issues returned depends on the configured value of max results e.g. 20
+      view <issue>                                View issue information
+      pick <issue>                                Start working on an issue
+      comment <issue> <comment>                   Add comment to an issue
+      log-time [options] <issue> <time_spent>     Log time to an issue
+      worklogs <issue>                            View worklogs for an issue
+      update-worklog [options] <issue> <worklog>  Update an existing worklog entry
+      delete-worklog <issue> <worklog>            Delete an existing worklog entry
+      review <issue>                              Move an issue for dev to review
+      qa <issue>                                  Move an issue for QA to check
+      close <issue>                               Close an issue
+      open <issue>                                Reopen an issue
+      dashboard [week]                            View time spent on a week. Week is a single number [1, 2, 3, ...] to which how many weeks to go back
 
     Options:
 
@@ -38,17 +40,29 @@ To install it globally and access it from any where on your system, run this com
   
   **Configuration**
 
-  The first task that needs to be performed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jira/config.json` file accessible only to the current user will be created.
+  The first task that needs to be performed before start using the tool is configuring Jira domain and credentials. To do so, we need to use `$ jiran config` command which will prompt us to fill required information. Upon completing required questions a `~/.jiran/config/default.json` file accessible only to the current user will be created.
 
-  To save Jira information to config file
+  To save Jira information to default json file
 
     $ jiran config
+
+   It is possible to have multiple configuration files. To save Jira information to a file name of your choice
+
+      $ jiran config -f <name-of-file.json>
+
+  To view available configuration files
+
+      $ jiran config -l
+
+  To switch to a specific configuration from the list available
+
+      $ jiran config -s <name-of-file.json>
 
   To view what is saved in config file
 
     $ jiran config -v
 
-  To saved default project
+  To save default project to the current configuration
 
     $ jiran config -p <project key>
 

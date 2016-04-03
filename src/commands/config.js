@@ -1,20 +1,24 @@
 const program = require('commander')
-const Config = require('../cli/config').createConfigWith('config.json')
-const ConfigPrompt = require('../cli/config_prompt').createPromptWith(Config)
+
+const Config = require('../cli/config')
+const ConfigPrompt = require('../cli/config_prompt')
 
 const TableRenderer = require('../util/table_renderer')
 const Logger = require('../util/logger').createLoggerWith(TableRenderer)
 
 program
-  .version('1.0.0')
+  .version('1.1.3')
   .command('config')
   .description('Create account configuration')
-  .action((options) => {
+  .option('-f, --filename [filename]', 'Config filename')
+  .action(options => {
     const message = 'Adding new configuration'
     TableRenderer.renderTitle(message)
     Logger.log('─'.repeat(message.length).gray)
 
-    ConfigPrompt.create()
+    ConfigPrompt
+      .createPromptWith(Config.createConfigWith(options.filename || 'default.json'))
+      .create()
   })
 
 program.parse(process.argv)
