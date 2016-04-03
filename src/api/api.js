@@ -176,6 +176,20 @@ class Api {
         return Promise.all(promises)
       })
   }
+
+  updateWorklog (key, worklogId, data) {
+    return this.client
+      .put(`/issue/${issue.key}/worklog`, data)
+      .then(response => response)
+      .catch(error => { throw new Error(error.message) })
+  }
+
+  deleteWorklog (key, worklogId) {
+    return this.client
+      .delete(`/issue/${issue.key}/worklog`)
+      .then(response => response)
+      .catch(error => { throw new Error(error.message) })
+  }
 }
 
 module.exports = Api

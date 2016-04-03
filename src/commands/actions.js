@@ -133,7 +133,26 @@ program
   .option('-t, --time_spent [time]', 'time spent', String)
   .option('-c, --comment [comment]', 'comment', String)
   .option('-d, --date [date]', 'date worklog in \'YYYY-MM-DD\' format e.g. 2016-01-31', String)
-  .action((issue, worklog) => JiraCli.updateWorklog(issue, worklog))
+  .action((issue, worklog, options) => {
+    let data = {}
+    if (options.time_spent) {
+      data.timeSpent = options.time_spent
+    }
+
+    if (options.comment) {
+      data.comment = options.comment
+    }
+
+    if (options.date) {
+      data.started = DateHelper.getWorklogDate(options.date)
+    }
+
+    if (Object.keys(data).length === 0) {
+      Logger.error('At least one of the options [time_spent, comment, date] should be set to update a worklog')
+    } else {
+      JiraApi.updateWorklog(issue, worklog, data)
+    }
+  })
 
 program
   .command('delete-worklog <issue> <worklog>')
@@ -175,11 +194,6 @@ program
       JiraCli.transitionIssue(issue, 'open')
     }
   })
-
-program
-  .command('worklogs <issue>')
-  .description('List worklogs for an issue')
-  .action(issue => JiraCli.renderIssueWorklogs(issue))
 
 program
   .command('dashboard [week]')

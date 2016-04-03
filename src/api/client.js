@@ -70,6 +70,7 @@ class Client {
   delete (url) {
     const options = this.options
     options.url = buildUrl(this.domainData, url, this.apiVersion)
+
     return new Promise((resolve, reject) => {
       request.del(options, (error, response) => {
         if (error || response.statusCode !== 204) {
