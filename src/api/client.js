@@ -1,5 +1,6 @@
 const url = require('url')
 const request = require('request')
+const EncryptDecrypter = require('../cli/encrypt_decrypter')
 const MAX_RESULTS = 20
 const PORT = '80'
 
@@ -8,26 +9,20 @@ class Client {
     if (!Config || !hasValidConfig(Config)) {
       throw new Error('Missing Config attribute')
     }
-
-    this.username = Config.username
-    this.password = Config.password
     this.apiVersion = Config.apiVersion
-    this.protocol = Config.protocol
-    this.host = Config.host
-    this.port = Config.port === PORT ? '' : Config.port
-    this.maxResult = Config.max_results || MAX_RESULTS
     this.options = {
       auth: {
-        'user': this.username,
-        'pass': this.password
+        'user': Config.username,
+        'pass': EncryptDecrypter.decrypt(Config.password)
       },
       json: true
     }
     this.domainData = {
-      protocol: this.protocol,
-      hostname: this.host,
-      port: this.port
+      protocol: Config.protocol,
+      hostname: Config.host,
+      port: Config.port === PORT ? '' : Config.port
     }
+    this.maxResult = Config.max_results || MAX_RESULTS
   }
 
   static createClientWith (ConfigData) {

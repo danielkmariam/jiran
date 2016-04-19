@@ -66,8 +66,9 @@ class Api {
         if (response.total === 0) {
           throw new Error('There are no worklogs for this issue')
         }
+
         return response.worklogs
-          .filter(worklog => worklog.author.name === this.client.username)
+          .filter(worklog => worklog.author.name === this.client.options.auth.user)
           .sort((worklogA, worklogB) => {
             return +(worklogA.id < worklogB.id) || +(worklogA.id === worklogB.id) - 1
           })
