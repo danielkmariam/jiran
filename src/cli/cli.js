@@ -107,17 +107,35 @@ class Cli {
       .getIssueWorklogs(issue)
       .then(worklogs => {
         this.tableRenderer.render(
-          ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Created'],
+          ['Worklog Id', 'Timespent', 'Comment', 'Author', 'Date'],
           worklogs.map(worklog => {
             return [
               worklog.id,
               worklog.timeSpent,
               worklog.comment,
               worklog.author,
-              worklog.created.split('T')[0]
+              worklog.started.split('T')[0]
             ]
           })
         )
+      })
+      .catch(error => { this.logger.error(error.message) })
+  }
+
+  updateWorklog (issue, worklog, data) {
+    return this.api
+      .updateWorklog(issue, worklog, data)
+      .then(response => {
+        this.logger.success(`Worklog ${worklog} of issue ${issue} has been updated`)
+      })
+      .catch(error => { this.logger.error(error.message)})
+  }
+
+  deleteWorklog (issue, worklog) {
+    return this.api
+      .deleteWorklog(issue, worklog)
+      .then(response => {
+        this.logger.success(`Worklog ${worklog} deleted from issue ${issue}`)
       })
       .catch(error => { this.logger.error(error.message) })
   }

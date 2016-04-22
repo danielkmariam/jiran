@@ -178,7 +178,7 @@ program
     if (Object.keys(data).length === 0) {
       Logger.error('At least one of the options [time_spent, comment, date] should be set to update a worklog')
     } else {
-      JiraApi.updateWorklog(issue, worklog, data)
+      JiraCli.updateWorklog(issue, worklog, data)
     }
   })
 
