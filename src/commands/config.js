@@ -7,7 +7,7 @@ const TableRenderer = require('../util/table_renderer')
 const Logger = require('../util/logger').createLoggerWith(TableRenderer)
 
 program
-  .version('1.2.1')
+  .version('1.2.2')
   .command('config')
   .description('Create account configuration')
   .option('-f, --filename [filename]', 'Config filename')

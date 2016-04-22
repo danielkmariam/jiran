@@ -17,7 +17,7 @@ const JiraCli = require('../cli/cli').createCliWith(JiraApi, TableRenderer, Logg
 const ConfigPrompt = require('../cli/config_prompt')
 
 program
-  .version('1.2.1')
+  .version('1.2.2')
 
 program
   .command('config')
