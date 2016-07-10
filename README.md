@@ -98,6 +98,29 @@ To install it globally and access it from any where on your system, run this com
 
    Time spent for a week defaults to the current week. The value of week is a single number [1, 2, ...] to which how many weeks to go back and see the time logged for that week.
 
+  Batch time log, data is read form a json file
+
+    $ jiran batch-time-log -f </path/to/file.json>
+
+    Above file contains json data in the following format
+
+    [
+      {
+        "ticket": "A123",
+        "worklog": [
+          {"time": "1h", "date": "2016-12-01", "comment": "this is comment 1"},
+          {"time": "1h", "date": "2016-12-02", "comment": "this is comment 2"}
+        ]
+      },
+      {
+        "ticket": "A124",
+        "worklog": [
+          {"time": "1h", "date": "2016-12-01", "comment": "this is comment 1"}
+        ]
+      }
+    ]
+
+
 Time logged for current week
 
     $ jiran dashboard
