@@ -102,6 +102,17 @@ class Cli {
     .catch(error => { this.logger.error(error.toString()) })
   }
 
+  addBatchWorklogs (worklogs) {
+    return Promise.all(worklogs.map(worklog => {
+      return this.api.addWorklog(
+        worklog.ticket,
+        worklog.time,
+        worklog.comment,
+        this.dateHelper.getWorklogDate(worklog.date)
+      )
+    }))
+  }
+
   renderIssueWorklogs (issue) {
     return this.api
       .getIssueWorklogs(issue)
@@ -128,7 +139,7 @@ class Cli {
       .then(response => {
         this.logger.success(`Worklog ${worklog} of issue ${issue} has been updated`)
       })
-      .catch(error => { this.logger.error(error.message)})
+      .catch(error => { this.logger.error(error.message) })
   }
 
   deleteWorklog (issue, worklog) {
