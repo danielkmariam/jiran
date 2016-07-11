@@ -120,13 +120,15 @@ To install it globally and access it from any where on your system, run this com
       }
     ]
 
+    Note: there shouldn't be a `,` at the last element of an array
+
 
 Time logged for current week
 
     $ jiran dashboard
 
 Time logged for last week
-  
+
     $ jiran dashboard 1
 
 ## License
