@@ -13,6 +13,8 @@ class BatchTimeLog {
         if (ticket.ticket && worklog.time && worklog.date) {
           flatten.valid.push(worklog)
         } else {
+          worklog.status = 'failed'
+          worklog.message = 'Missing required value(s)'
           flatten.invalid.push(worklog)
         }
       }

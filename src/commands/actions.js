@@ -160,30 +160,11 @@ program
 
       JiraCli.addBatchWorklogs(BatchTimeLog.valid)
       .then(response => {
-        TableRenderer.render(
-          ['Ticket', 'Time', 'Date', 'Comment'],
-          BatchTimeLog.valid.map(worklog => {
-            return [
-              worklog.ticket || '',
-              worklog.time || '',
-              worklog.date || '',
-              worklog.comment || ''
-            ]
-          })
-        )
-        TableRenderer.render(
-          ['Ticket', 'Time', 'Date', 'Comment'],
-          BatchTimeLog.invalid.map(worklog => {
-            return [
-              worklog.ticket || '',
-              worklog.time || '',
-              worklog.date || '',
-              worklog.comment || ''
-            ]
-          })
-        )
+        JiraCli.renderBatchTimeLogResult(response.concat(BatchTimeLog.invalid))
       })
-      .catch(error => { Logger.error(error.message) })
+      .catch(error => {
+        Logger.error(error.message)
+      })
     } else {
       Logger.error('Missing json file')
     }

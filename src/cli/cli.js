@@ -1,3 +1,5 @@
+const colors = require('colors')
+
 class Cli {
   constructor (JiraApi, TableRenderer, Logger, DateHelper, FileReader) {
     this.api = JiraApi
@@ -103,14 +105,25 @@ class Cli {
   }
 
   addBatchWorklogs (worklogs) {
-    return Promise.all(worklogs.map(worklog => {
+    let tasks = worklogs.map(worklog => {
       return this.api.addWorklog(
         worklog.ticket,
         worklog.time,
         worklog.comment,
         this.dateHelper.getWorklogDate(worklog.date)
       )
-    }))
+      .then(response => {
+        worklog.status = 'success'
+        return worklog
+      })
+      .catch(error => {
+        worklog.status = 'failed'
+        worklog.message = error.toString()
+        return worklog
+      })
+    })
+
+    return Promise.all(tasks)
   }
 
   renderIssueWorklogs (issue) {
@@ -209,6 +222,23 @@ class Cli {
       })
     )
   }
+
+  renderBatchTimeLogResult(worklogs) {
+    this.logger.log(`Batch time log result, please check the notes for failed actions`)
+    this.tableRenderer.render(
+      ['Ticket', 'Time', 'Date', 'Status', 'Note'],
+      worklogs.map(worklog => {
+        return [
+          worklog.ticket || '',
+          worklog.time || '',
+          worklog.date || '',
+          worklog.status == 'success' ? colors.green(worklog.status) : colors.red(worklog.status),
+          worklog.status == 'failed' ? colors.red(worklog.message) : ''
+        ]
+      })
+    )
+  }
+
 }
 
 module.exports = Cli
