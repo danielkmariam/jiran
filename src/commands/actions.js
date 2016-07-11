@@ -151,6 +151,26 @@ program
   })
 
 program
+  .command('batch-time-log')
+  .description('Batch time log form json file')
+  .option('-f, --file <file>', 'File')
+  .action(options => {
+    if (options.file) {
+      const BatchTimeLog = require('../cli/batch_time_log').getBatch(options.file)
+
+      JiraCli.addBatchWorklogs(BatchTimeLog.valid)
+      .then(response => {
+        JiraCli.renderBatchTimeLogResult(response.concat(BatchTimeLog.invalid))
+      })
+      .catch(error => {
+        Logger.error(error.message)
+      })
+    } else {
+      Logger.error('Missing json file')
+    }
+  })
+
+program
   .command('worklogs <issue>')
   .description('View work logs for an issue')
   .action(issue => JiraCli.renderIssueWorklogs(issue))
