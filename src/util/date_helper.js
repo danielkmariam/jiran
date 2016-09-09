@@ -7,7 +7,7 @@ class DateHelper {
   }
 
   getWorklogDate (started) {
-    return this.getMoment(started).format('YYYY-MM-DD[T]hh:mm:ss.SSSZZ')
+    return this.getMoment(started).format('YYYY-MM-DD[T]HH:mm:ss.SSSZZ')
   }
 
   getStartOf (weekAgo) {
