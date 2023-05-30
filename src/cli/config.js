@@ -3,6 +3,7 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 const userhome = require('user-home')
 const setupConfig = require('../cli/setup')
+const EncryptDecrypter = require('./encrypt_decrypter')
 
 class Config {
   constructor (fileName) {
@@ -23,8 +24,11 @@ class Config {
   }
 
   save (configData) {
+    let data = Object.assign({}, configData)
+    data.password = EncryptDecrypter.encrypt(configData.password)
+
     createFolder(this.configFilename)
-    fs.writeFileSync(this.configFilename, JSON.stringify(configData), 'utf8')
+    fs.writeFileSync(this.configFilename, JSON.stringify(data), 'utf8')
 
     setupConfig.switchConfig(this.filename)
   }

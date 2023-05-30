@@ -13,7 +13,7 @@ describe('Jira Api', function () {
   before(function () {
     ConfigData = {
       username: 'test',
-      password: 'test',
+      password: '6c1c88c2d6c9307924631245',
       host: 'test.domain.com',
       protocol: 'https',
       port: '',
@@ -30,7 +30,7 @@ describe('Jira Api', function () {
 
   it('It should be initialized with Jira Client', function () {
     expect(JiraApi.client).to.not.equal('undefined')
-    expect(JiraApi.client.username).to.be.equal(ConfigData.username)
+    expect(JiraApi.client.apiVersion).to.be.equal(ConfigData.apiVersion)
   })
 
   describe('Issue', function () {
@@ -70,7 +70,7 @@ describe('Jira Api', function () {
         })
     })
   })
-  
+
   describe('User issues', function () {
     it('It should return all issues for current user', function () {
       JiraApi.client.get = sinon.stub().returns(Promise.resolve({

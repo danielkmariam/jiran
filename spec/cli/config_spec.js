@@ -1,11 +1,13 @@
 
 const fs = require('fs')
 const config = require('../../src/cli/config')
+const EncryptDecrypter = require('../../src/cli/encrypt_decrypter')
+
 const expect = require('chai').expect
 
 describe('Config', function () {
   let Config, expected
-  
+
   beforeEach(function () {
     Config = config.createConfigWith('config_test.json')
     expected = {
@@ -27,9 +29,7 @@ describe('Config', function () {
   })
 
   it('It should save config information', function () {
-    
     Config.save(expected)
-
     const actual = JSON.parse(fs.readFileSync(Config.configFilename))
 
     expect(expected.username).to.be.equal(actual.username)
@@ -37,11 +37,10 @@ describe('Config', function () {
   })
 
   it('It should render saved config information', function () {
-    
-    const actual = Config.detail()
 
-    expect(expected.username).to.be.equal(actual.username)
-    expect(expected.password).to.be.equal(actual.password)
+    const actual = Config.detail()
+    console.log(EncryptDecrypter.decrypt(expected.password))
+    expect(EncryptDecrypter.encrypt(expected.password)).to.be.equal(actual.password)
     expect(expected.host).to.be.equal(actual.host)
     expect(expected.protocol).to.be.equal(actual.protocol)
     expect(expected.port).to.be.equal(actual.port)
